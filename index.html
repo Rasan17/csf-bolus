@@ -1,0 +1,2268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSF Bolus Study Calculator - PVI, Rout & Time Constant (τ)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for scientific multi-graph rendering -->
+    <script src="chart.umd.min.js"></script>
+    <script>
+        if (typeof Chart === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>');
+        }
+    </script>
+    <style>
+        :root {
+            --bg-primary: #0b1120;
+            --bg-secondary: #131d31;
+            --bg-tertiary: #1e293b;
+            --card-bg: rgba(19, 29, 49, 0.80);
+            --card-border: rgba(255, 255, 255, 0.09);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #38bdf8;
+            --accent-indigo: #6366f1;
+            --accent-purple: #a855f7;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --shadow-glow: 0 10px 25px -5px rgba(6, 182, 212, 0.2);
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --shadow-glow: 0 10px 25px -5px rgba(99, 102, 241, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 24px;
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Header Bar */
+        .app-header {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 22px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .header-title-group h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title-group .subtitle {
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .header-title-group .copyright {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-icon {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-1px);
+            background: var(--accent-indigo);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Disclaimer Banner */
+        .disclaimer-banner {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 12px 20px;
+            font-size: 12.5px;
+            color: var(--accent-amber);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.08);
+        }
+
+        .disclaimer-banner strong {
+            font-weight: 700;
+            color: #fbbf24;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            background: var(--bg-primary);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: var(--text-primary);
+            font-size: 13.5px;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.25);
+        }
+
+        select.form-control {
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+
+        /* Primary Three Target Metrics Hero Cards */
+        .primary-metrics-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .hero-metric-card {
+            background: linear-gradient(145deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1.5px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .hero-metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-metric-card.card-pvi {
+            border-top: 4px solid var(--accent-cyan);
+        }
+        .hero-metric-card.card-rout {
+            border-top: 4px solid var(--accent-emerald);
+        }
+        .hero-metric-card.card-tau {
+            border-top: 4px solid var(--accent-amber);
+        }
+
+        .hero-metric-number {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 28px;
+            font-weight: 800;
+            opacity: 0.15;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero-metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hero-metric-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-metric-value {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+            margin: 4px 0;
+        }
+
+        .hero-metric-formula {
+            font-size: 11.5px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 4px 8px;
+            border-radius: 6px;
+            width: fit-content;
+        }
+
+        .hero-metric-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        /* Secondary Metrics Dashboard */
+        .secondary-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-cyan);
+        }
+
+        .metric-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-indigo));
+        }
+
+        .metric-card.alert::before {
+            background: linear-gradient(90deg, var(--accent-rose), var(--accent-amber));
+        }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .metric-subtext {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        .metric-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-normal {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-emerald);
+            border: 1px solid var(--accent-emerald);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-amber);
+            border: 1px solid var(--accent-amber);
+        }
+
+        .badge-danger {
+            background: rgba(244, 63, 94, 0.2);
+            color: var(--accent-rose);
+            border: 1px solid var(--accent-rose);
+        }
+
+        /* Workspace Grid */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1120px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            background: var(--bg-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            text-align: left;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            background: var(--bg-tertiary);
+            z-index: 2;
+        }
+
+        th {
+            padding: 9px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        td {
+            padding: 7px 12px;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-primary);
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .table-input {
+            width: 68px;
+            background: var(--bg-primary);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 5px 8px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-align: right;
+            outline: none;
+        }
+
+        .table-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-table-action {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .btn-table-action:hover {
+            color: var(--accent-rose);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 16px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--card-border);
+        }
+
+        /* Presets Bar */
+        .presets-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
+        }
+
+        .presets-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .preset-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            padding: 5px 11px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+            background: rgba(6, 182, 212, 0.15);
+        }
+
+        /* Charts Column */
+        .charts-column {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .chart-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chart-title-wrap h3 {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-subtitle {
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .chart-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .chart-canvas-wrap {
+            position: relative;
+            width: 100%;
+            height: 270px;
+        }
+
+        .chart-canvas-wrap.small {
+            height: 220px;
+        }
+
+        /* Clinical Reference Box */
+        .clinical-reference-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .clinical-reference-box strong {
+            color: var(--text-primary);
+        }
+
+        /* Footer & Dedication */
+        .app-footer {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 22px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .footer-author {
+            font-size: 13.5px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .footer-dedication {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-style: italic;
+        }
+
+        .footer-ref {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* Modal Styles */
+        .modal-overlay.active {
+            display: flex !important;
+        }
+
+        .modal-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            max-width: 760px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 12px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Print formatting */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                padding: 10px !important;
+            }
+            .app-header, .btn-icon, .btn-primary, .btn-secondary, .presets-bar, .btn-table-action {
+                display: none !important;
+            }
+            .section-card, .chart-box, .metric-card, .hero-metric-card {
+                border: 1px solid #cccccc !important;
+                background: #ffffff !important;
+                box-shadow: none !important;
+            }
+            .workspace-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-title-group">
+                <h1>
+                    <span>💉</span> CSF Bolus Study Calculator
+                </h1>
+                <div class="subtitle">
+                    Marmarou Mono-Exponential Model: Pressure-Volume Index (PVI), Outflow Resistance (R<sub>out</sub>) & Time Constant of Pressure Decay (&tau;)
+                </div>
+                <div class="copyright">
+                    Developed by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN), Neurosurgery Research Listserv, UK &bull; 
+                    <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark / Light Theme">
+                    <span id="themeIcon">☀️</span> <span id="themeLabel">Light Mode</span>
+                </button>
+                <button class="btn-icon" id="about-btn" title="About Software & References">ℹ️ About</button>
+                <button class="btn-icon" onclick="openMathModal()" title="Marmarou Bolus Theory & Equations">
+                    <span>📖</span> Formulae & Guide
+                </button>
+                <button class="btn-icon" onclick="copyClinicalReport()" title="Copy Formatted EHR Summary">
+                    <span>📋</span> Copy Report
+                </button>
+                <button class="btn-icon" onclick="window.print()" title="Print or Save PDF">
+                    <span>🖨️</span> Print / PDF
+                </button>
+                <button class="btn-icon" onclick="emailReport()" title="Email Clinical Summary">
+                    <span>✉️</span> Email
+                </button>
+            </div>
+        </header>
+
+        <!-- Mandatory Clinical Disclaimer -->
+        <div class="disclaimer-banner">
+            <span style="font-size: 20px;">⚠️</span>
+            <div>
+                <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+            </div>
+        </div>
+
+        <!-- Protocol & Parameters Bar -->
+        <section class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>⚙️</span> Bolus Infusion Parameters & Patient Setup
+                </div>
+                <span class="badge-pill">Marmarou Exponential Decay Protocol</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Patient ID / Ref</label>
+                    <input type="text" id="patientId" class="form-control" placeholder="e.g. PT-94021" value="PT-CSF-801">
+                </div>
+                <div class="form-group">
+                    <label>Study Date</label>
+                    <input type="date" id="studyDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Access Route</label>
+                    <select id="accessRoute" class="form-control">
+                        <option value="Lumbar Puncture" selected>Lumbar Puncture (LP)</option>
+                        <option value="External Ventricular Drain">External Ventricular Drain (EVD)</option>
+                        <option value="Ommaya Reservoir">Ommaya Reservoir</option>
+                        <option value="Subdural Catheter">Subdural Catheter</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Bolus Volume V<sub>inf</sub> (&Delta;V in mL)</label>
+                    <input type="number" id="bolusVolume" class="form-control" step="0.5" value="10.0" oninput="updateAll()">
+                </div>
+                <div class="form-group">
+                    <label>Baseline ICP P<sub>b</sub> (mmHg)</label>
+                    <input type="number" id="baselineIcp" class="form-control" step="0.5" value="10.0" oninput="updateAll()">
+                </div>
+                <div class="form-group">
+                    <label>Peak ICP P<sub>peak</sub> (mmHg)</label>
+                    <input type="number" id="peakIcp" class="form-control" step="0.5" value="26.0" oninput="updateAll()">
+                </div>
+                <div class="form-group">
+                    <label style="color: var(--accent-rose); font-weight: 700;">Safety Threshold (mmHg)</label>
+                    <input type="number" id="safetyThreshold" class="form-control" step="1" value="30" style="border-color: rgba(244, 63, 94, 0.4);" oninput="updateAll()">
+                </div>
+            </div>
+        </section>
+
+        <!-- Presets Quick Selection -->
+        <div class="presets-bar">
+            <span class="presets-label">⚡ Clinical Presets:</span>
+            <button class="preset-btn" onclick="loadPreset('normal')">1. Normal Adult (Vinf: 10 mL, Pb: 10, Ppeak: 26, Rout ~7.2)</button>
+            <button class="preset-btn" onclick="loadPreset('nph')">2. NPH / High Rout (Vinf: 10 mL, Pb: 12, Ppeak: 32, Rout ~16.0)</button>
+            <button class="preset-btn" onclick="loadPreset('stiff')">3. Stiff Brain / Low PVI (Vinf: 5 mL, Pb: 14, Ppeak: 40, Rout ~18.2)</button>
+            <button class="preset-btn" onclick="loadPreset('bolus5')">4. Standard 5 mL Bolus (Vinf: 5 mL, Pb: 10, Ppeak: 22)</button>
+        </div>
+
+        <!-- HERO THREE TARGET PARAMETERS -->
+        <div class="primary-metrics-banner">
+            <!-- 1. PVI -->
+            <div class="hero-metric-card card-pvi">
+                <span class="hero-metric-number">1</span>
+                <div class="hero-metric-header">
+                    <div class="hero-metric-label">
+                        <span>🎯</span> 1) Pressure-Volume Index (PVI)
+                    </div>
+                    <span id="badgePvi" class="metric-badge badge-normal">Normal</span>
+                </div>
+                <div class="hero-metric-value" id="valPvi">-- mL</div>
+                <div class="hero-metric-formula">PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)</div>
+                <div class="hero-metric-desc">
+                    Volume required to raise ICP 10-fold. Characterizes intracranial mechanical compliance slope. Normal: &gt; 18 mL (adult) or &gt; 13 mL (elderly).
+                </div>
+            </div>
+
+            <!-- 2. Rout -->
+            <div class="hero-metric-card card-rout">
+                <span class="hero-metric-number">2</span>
+                <div class="hero-metric-header">
+                    <div class="hero-metric-label">
+                        <span>🎯</span> 2) Outflow Resistance (R<sub>out</sub>)
+                    </div>
+                    <span id="badgeRout" class="metric-badge badge-normal">Normal</span>
+                </div>
+                <div class="hero-metric-value" id="valRout">-- <span style="font-size: 16px;">mmHg&middot;min/mL</span></div>
+                <div class="hero-metric-formula">R<sub>out</sub> = &int;[P(t)-P<sub>b</sub>]dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C</div>
+                <div class="hero-metric-desc">
+                    Calculated via cumulative pressure-time integral divided by bolus volume. Normal: &lt; 10 &ndash; 12. Pathological: &gt; 12 &ndash; 18 mmHg&middot;min/mL.
+                </div>
+            </div>
+
+            <!-- 3. Time Constant Tau -->
+            <div class="hero-metric-card card-tau">
+                <span class="hero-metric-number">3</span>
+                <div class="hero-metric-header">
+                    <div class="hero-metric-label">
+                        <span>🎯</span> 3) Time Constant of Decay (&tau;)
+                    </div>
+                    <span class="metric-badge badge-normal">Decay Rate</span>
+                </div>
+                <div class="hero-metric-value" id="valTau">-- <span style="font-size: 16px;">min</span></div>
+                <div class="hero-metric-formula">&tau; = R<sub>out</sub> &times; C = AUC / (P<sub>peak</sub> - P<sub>b</sub>)</div>
+                <div class="hero-metric-desc">
+                    Rate of mono-exponential pressure decay. Slope of ln[P(t) - P<sub>b</sub>] vs time equals -1/&tau;. Prolonged &tau; signifies delayed CSF resorption.
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Biomechanical Cards -->
+        <div class="secondary-metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>Intracranial Compliance (C)</span>
+                    <span class="metric-badge badge-normal">Buffering</span>
+                </div>
+                <div class="metric-value" id="valCompliance">-- <span style="font-size: 14px;">mL/mmHg</span></div>
+                <div class="metric-subtext">C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>). Immediate volumetric reserve.</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>Area Under Curve (AUC)</span>
+                    <span class="metric-badge badge-normal">Integral</span>
+                </div>
+                <div class="metric-value" id="valAuc">-- <span style="font-size: 14px;">mmHg&middot;min</span></div>
+                <div class="metric-subtext">Cumulative excess pressure &int;[P(t) - P<sub>b</sub>] dt.</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>Exponential Fit (R²)</span>
+                    <span class="metric-badge badge-normal" id="badgeR2">Mono-Exp</span>
+                </div>
+                <div class="metric-value" id="valR2">--</div>
+                <div class="metric-subtext">Linear regression goodness-of-fit for ln[P(t) - P<sub>b</sub>] vs t.</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>Decay Half-Time (t<sub>½</sub>)</span>
+                    <span class="metric-badge badge-normal">50% Fall</span>
+                </div>
+                <div class="metric-value" id="valHalfTime">-- <span style="font-size: 14px;">min</span></div>
+                <div class="metric-subtext" id="subHalfPressure">t<sub>½</sub> = &tau; &times; ln(2) = 0.693 &times; &tau;.</div>
+            </div>
+
+            <div class="metric-card" id="cardSafetyStatus">
+                <div class="metric-label">
+                    <span>Safety Threshold Status</span>
+                    <span id="badgeSafety" class="metric-badge badge-normal">Safe</span>
+                </div>
+                <div class="metric-value" id="valSafetyStatus">OK</div>
+                <div class="metric-subtext" id="subSafetyThreshold">Configured threshold: 30.0 mmHg.</div>
+            </div>
+        </div>
+
+        <!-- Main Workspace: Data Table + Linked Graphs -->
+        <div class="workspace-grid">
+            <!-- Left: Table & Log Regression Info -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>📊</span> Pressure Decay Time Series
+                    </div>
+                    <span class="badge-pill" id="rowCountBadge">10 Readings</span>
+                </div>
+
+                <div style="font-size: 12px; color: var(--text-secondary);">
+                    Record time t (minutes post-bolus) and observed ICP as pressure decays back to baseline P<sub>b</sub>.
+                </div>
+
+                <div class="table-responsive">
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Time (min)</th>
+                                <th>ICP (mmHg)</th>
+                                <th>P(t) - P<sub>b</sub></th>
+                                <th>ln[P - P<sub>b</sub>]</th>
+                                <th style="text-align: center;">Act</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: space-between;">
+                    <button class="btn-primary" onclick="addRow()">
+                        <span>➕</span> Add Reading
+                    </button>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-secondary" onclick="sortRowsByTime()" title="Sort table by ascending time">
+                            <span>⏱️</span> Sort
+                        </button>
+                        <button class="btn-secondary" onclick="exportCsv()" title="Download CSV data">
+                            <span>💾</span> CSV
+                        </button>
+                        <button class="btn-secondary" onclick="clearTable()" style="color: var(--accent-rose);" title="Clear table readings">
+                            <span>🗑️</span> Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mathematical Summary Card -->
+                <div class="clinical-reference-box">
+                    <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
+                        📌 Marmarou Bolus Mathematical Formulation:
+                    </div>
+                    <div>&bull; <strong>Intracranial Compliance (C):</strong> &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>)</div>
+                    <div>&bull; <strong>PVI:</strong> &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)</div>
+                    <div>&bull; <strong>AUC:</strong> &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt = (P<sub>peak</sub> - P<sub>b</sub>) &times; &tau;</div>
+                    <div>&bull; <strong>Time Constant (&tau;):</strong> Slope of ln[P(t) - P<sub>b</sub>] vs t = -1/&tau;</div>
+                    <div>&bull; <strong>R<sub>out</sub>:</strong> AUC / V<sub>inf</sub> = &tau; / C</div>
+                    <div>&bull; <strong>Mono-Exponential Model:</strong> P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>) &middot; e<sup>-t / &tau;</sup></div>
+                </div>
+            </div>
+
+            <!-- Right: Scientific Graphs -->
+            <div class="charts-column">
+                <!-- Graph 1: P(t) vs Time with Tau marker & safety threshold -->
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div class="chart-title-wrap">
+                            <h3>
+                                <span style="color: var(--accent-cyan);">📈</span> Graph 1: Pressure Decay Curve P(t) vs Time
+                            </h3>
+                            <div class="chart-subtitle">
+                                Mono-exponential model P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>)e<sup>-t/&tau;</sup> with &tau; marker and safety threshold.
+                            </div>
+                        </div>
+                        <div class="chart-badges">
+                            <span class="badge-pill" id="graph1PeakBadge">Peak: 26.0 mmHg</span>
+                            <span class="badge-pill" style="border-color: var(--accent-amber); color: var(--accent-amber); background: rgba(245, 158, 11, 0.1);" id="graph1TauBadge">
+                                &tau; = -- min
+                            </span>
+                            <span class="badge-pill" style="border-color: var(--accent-rose); color: var(--accent-rose); background: rgba(244, 63, 94, 0.1);" id="graph1SafetyBadge">
+                                Safety: 30 mmHg
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+
+                <!-- Graph 2: 1st Derivative (dP/dt) -->
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div class="chart-title-wrap">
+                            <h3>
+                                <span style="color: var(--accent-amber);">📉</span> Graph 2: Rate of Pressure Decay (dP/dt)
+                            </h3>
+                            <div class="chart-subtitle">
+                                First derivative: dP/dt = -[(P<sub>peak</sub> - P<sub>b</sub>) / &tau;] &middot; e<sup>-t/&tau;</sup> (instantaneous recovery velocity).
+                            </div>
+                        </div>
+                        <div class="chart-badges">
+                            <span class="badge-pill" id="graph2MaxRateBadge">Initial Rate: -- mmHg/min</span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrap small">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+
+                <!-- Graph 3: 2nd Derivative (d2P/dt2) -->
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div class="chart-title-wrap">
+                            <h3>
+                                <span style="color: var(--accent-purple);">🔄</span> Graph 3: Curvature & Decay Deceleration (d²P/dt²)
+                            </h3>
+                            <div class="chart-subtitle">
+                                Second derivative: d²P/dt² = [(P<sub>peak</sub> - P<sub>b</sub>) / &tau;²] &middot; e<sup>-t/&tau;</sup> (decay stabilization).
+                            </div>
+                        </div>
+                        <div class="chart-badges">
+                            <span class="badge-pill" id="graph3CurvBadge">Curvature: Stabilizing</span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrap small">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+
+                <!-- Graph 4: Logarithmic Linearization Plot (ln[P - Pb] vs t) -->
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div class="chart-title-wrap">
+                            <h3>
+                                <span style="color: var(--accent-emerald);">📏</span> Graph 4: Logarithmic Linearization Plot (ln[P(t) - P<sub>b</sub>] vs Time)
+                            </h3>
+                            <div class="chart-subtitle">
+                                Semi-logarithmic plot demonstrating mono-exponential decay where linear slope = -1/&tau;.
+                            </div>
+                        </div>
+                        <div class="chart-badges">
+                            <span class="badge-pill" id="graph4SlopeBadge">Slope = -1/&tau;</span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrap small">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clinical Guidelines Reference Box -->
+        <section class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>🩺</span> Diagnostic Thresholds & Clinical Interpretation
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; font-size: 12.5px; color: var(--text-secondary);">
+                <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">1. Pressure-Volume Index (PVI)</div>
+                    <div>&bull; <strong>Normal Adult:</strong> &gt; 18 mL (mean ~25 mL)</div>
+                    <div>&bull; <strong>Borderline / Elderly:</strong> 13 &ndash; 18 mL</div>
+                    <div>&bull; <strong>Pathological (&lt; 13 mL):</strong> Indicates severe cranial volume exhaustion or stiff intracranial vault.</div>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <div style="font-weight: 700; color: var(--accent-emerald); margin-bottom: 6px;">2. CSF Outflow Resistance (R<sub>out</sub>)</div>
+                    <div>&bull; <strong>Normal:</strong> &lt; 10 &ndash; 12 mmHg&middot;min/mL</div>
+                    <div>&bull; <strong>Borderline:</strong> 10 &ndash; 12 mmHg&middot;min/mL</div>
+                    <div>&bull; <strong>Pathological (&gt; 12 &ndash; 18 mmHg&middot;min/mL):</strong> Impaired CSF absorption capacity; supports diagnosis of communicating hydrocephalus or NPH.</div>
+                </div>
+                <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <div style="font-weight: 700; color: var(--accent-amber); margin-bottom: 6px;">3. Time Constant of Decay (&tau;)</div>
+                    <div>&bull; <strong>Definition:</strong> Product of outflow resistance and intracranial compliance (&tau; = R<sub>out</sub> &times; C).</div>
+                    <div>&bull; <strong>Significance:</strong> Prolonged &tau; signifies sluggish CSF resorption kinetics.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div id="footer-disclaimer" style="font-size: 11.5px; color: var(--accent-amber); font-weight: 500; margin-bottom: 4px;">
+                ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+            </div>
+            <div class="footer-author">
+                Software Developed by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN), Neurosurgery Research Listserv, UK.<br>
+                Email: <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
+            </div>
+            <div class="footer-dedication">
+                Dedicated to my mother Mrs Nirmaladevy Ganesalingam BSc
+            </div>
+            <div class="footer-ref">
+                <strong>Key Clinical References:</strong><br>
+                1. Marmarou A, Shulman K, LaMorgese J. Compartmental analysis of compliance and outflow resistance of the cerebrospinal fluid system. <em>J Neurosurg</em> 1975;43(5):523-534.<br>
+                2. Marmarou A, Shulman K, Rosende RM. A nonlinear analysis of the cerebrospinal fluid system and intracranial pressure. <em>J Neurosurg</em> 1978;48(3):332-344.<br>
+                3. Tans JT, Boon AJ. How to evaluate cerebrospinal fluid dynamics. <em>Acta Neurochir Suppl</em> 2002;81:49-53.<br>
+                4. Czosnyka M, Czosnyka Z, Momjian S, Pickard JD. Cerebrospinal fluid dynamics. <em>Physiol Meas</em> 2004;25(5):R51-R76.<br>
+                5. Kosteljanetz M. CSF dynamics and pressure-volume relationships in patients with normal pressure hydrocephalus. <em>Acta Neurol Scand Suppl</em> 1986;108:1-23.
+            </div>
+        </footer>
+    </div>
+
+    <!-- Mathematical Formula Modal -->
+    <div class="modal-overlay" id="mathModal" onclick="closeMathModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title">📖 Marmarou Bolus Model Mathematical Framework</div>
+                <button class="btn-close" onclick="closeMathModal()">&times;</button>
+            </div>
+            <div style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); display: flex; flex-direction: column; gap: 14px;">
+                <p>
+                    In a bolus injection test, a discrete volume (V<sub>inf</sub>) is introduced instantaneously rather than continuously. Because a bolus creates a transient pressure spike followed by an exponential decay rather than a steady-state plateau, Anthony Marmarou’s mathematical model analyzes the entire pressure-time recovery curve.
+                </p>
+
+                <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <strong style="color: var(--accent-cyan);">1. Intracranial Compliance (C) & PVI</strong>
+                    <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
+                        C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>)  [mL/mmHg]<br>
+                        PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)  [mL]
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <strong style="color: var(--accent-emerald);">2. Outflow Resistance (R<sub>out</sub>)</strong>
+                    <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
+                        R<sub>out</sub> = &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C
+                    </div>
+                    <div style="font-size: 11.5px; margin-top: 4px;">
+                        Dividing the cumulative excess pressure-time integral by the injected volume yields the true outflow resistance (mmHg&middot;min/mL).
+                    </div>
+                </div>
+
+                <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <strong style="color: var(--accent-amber);">3. Time Constant of Pressure Decay (&tau;)</strong>
+                    <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
+                        P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>) &middot; e<sup>-t / &tau;</sup><br>
+                        AUC = (P<sub>peak</sub> - P<sub>b</sub>) &times; &tau;<br>
+                        ln[P(t) - P<sub>b</sub>] = ln(P<sub>peak</sub> - P<sub>b</sub>) - (1 / &tau;) &times; t
+                    </div>
+                    <div style="font-size: 11.5px; margin-top: 4px;">
+                        Linear regression of ln[P(t) - P<sub>b</sub>] vs t yields a straight line with slope = -1/&tau;.
+                    </div>
+                </div>
+
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px; font-size: 11.5px; color: var(--accent-amber);">
+                    ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal Dialog for About -->
+    <div class="modal-overlay" id="about-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">About CSF Bolus Study Calculator</h3>
+                <button class="btn-icon" id="close-about-btn" style="padding: 4px 10px;">✕</button>
+            </div>
+            <div style="font-size: 13.5px; line-height: 1.6; color: var(--text-primary);">
+                <p style="margin-bottom: 8px;">
+                    <strong>Software Developed by:</strong><br>
+                    Dr G Narenthiran FRCS(SN)<br>
+                    Neurosurgery Research Listserv, UK<br>
+                    Email: <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan);">g_narenthiran@hotmail.com</a>
+                </p>
+                <p style="margin-bottom: 12px; font-size: 12.5px; font-weight: 600; color: var(--accent-indigo); font-style: italic;">
+                    Dedicated to my mother Mrs Nirmaladevy Ganesalingam BSc
+                </p>
+                <hr style="border: none; border-top: 1px solid var(--card-border); margin: 12px 0;">
+                <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: var(--accent-amber); margin-bottom: 12px; line-height: 1.4;">
+                    ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+                </div>
+                <p style="font-size: 12px; color: var(--text-secondary);">
+                    <strong>Marmarou Bolus Study Kinetic Analysis:</strong><br>
+                    • <strong>1) Pressure-Volume Index (PVI):</strong> PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>). Volume needed to raise ICP 10-fold.<br>
+                    • <strong>2) Outflow Resistance (R<sub>out</sub>):</strong> R<sub>out</sub> = &int;[P(t) - P<sub>b</sub>]dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C. Values &gt; 12 mmHg&middot;min/mL predict positive response to CSF diversion.<br>
+                    • <strong>3) Time Constant of Decay (&tau;):</strong> &tau; = R<sub>out</sub> &times; C. Linear regression slope of ln[P(t) - P<sub>b</sub>] vs t equals -1/&tau;.<br>
+                    • <strong>Intracranial Compliance (C):</strong> C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>). Immediate volumetric buffering capacity.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // --- State Management ---
+        let readings = [
+            { time: 0.0, icp: 26.0 },
+            { time: 0.5, icp: 24.3 },
+            { time: 1.0, icp: 22.8 },
+            { time: 1.5, icp: 21.4 },
+            { time: 2.0, icp: 20.2 },
+            { time: 2.5, icp: 19.1 },
+            { time: 3.0, icp: 18.1 },
+            { time: 4.0, icp: 16.5 },
+            { time: 5.0, icp: 15.2 },
+            { time: 6.0, icp: 14.1 },
+            { time: 8.0, icp: 12.6 },
+            { time: 10.0, icp: 11.7 }
+        ];
+
+        let chart1Instance = null;
+        let chart2Instance = null;
+        let chart3Instance = null;
+        let chart4Instance = null;
+
+        // Custom plugin for vertical lines and badges on Chart.js
+        const chartMarkerPlugin = {
+            id: 'chartMarkerPlugin',
+            afterDraw: (chart) => {
+                const marker = chart.config.options?.plugins?.chartMarker;
+                if (!marker || marker.xValue === undefined || isNaN(marker.xValue)) return;
+
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                const xPos = xAxis.getPixelForValue(marker.xValue);
+
+                if (xPos < xAxis.left || xPos > xAxis.right) return;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([5, 4]);
+                ctx.strokeStyle = marker.color || '#f59e0b';
+                ctx.lineWidth = 1.8;
+                ctx.moveTo(xPos, yAxis.top);
+                ctx.lineTo(xPos, yAxis.bottom);
+                ctx.stroke();
+
+                if (marker.label) {
+                    ctx.font = 'bold 10px Inter, sans-serif';
+                    const textWidth = ctx.measureText(marker.label).width;
+                    const badgeWidth = textWidth + 12;
+                    const badgeHeight = 20;
+                    const badgeX = Math.min(Math.max(xPos - badgeWidth / 2, xAxis.left), xAxis.right - badgeWidth);
+                    const badgeY = yAxis.top + 4;
+
+                    ctx.fillStyle = marker.badgeBg || 'rgba(245, 158, 11, 0.9)';
+                    ctx.beginPath();
+                    ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(marker.label, badgeX + badgeWidth / 2, badgeY + badgeHeight / 2);
+                }
+                ctx.restore();
+            }
+        };
+
+        // Safety threshold line plugin for Chart 1
+        const safetyThresholdPlugin = {
+            id: 'safetyThresholdPlugin',
+            afterDraw: (chart) => {
+                const safetyVal = parseFloat(document.getElementById('safetyThreshold')?.value) || 30;
+                const yAxis = chart.scales.y;
+                const xAxis = chart.scales.x;
+
+                if (isNaN(safetyVal) || safetyVal < yAxis.min || safetyVal > yAxis.max) return;
+
+                const yPos = yAxis.getPixelForValue(safetyVal);
+                const ctx = chart.ctx;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([6, 5]);
+                ctx.strokeStyle = '#f43f5e';
+                ctx.lineWidth = 2.2;
+                ctx.moveTo(xAxis.left, yPos);
+                ctx.lineTo(xAxis.right, yPos);
+                ctx.stroke();
+
+                const label = `⚠️ Safety Threshold: ${safetyVal.toFixed(1)} mmHg`;
+                ctx.font = 'bold 10px Inter, sans-serif';
+                const textWidth = ctx.measureText(label).width;
+                const badgeWidth = textWidth + 10;
+                const badgeHeight = 18;
+                const badgeX = xAxis.right - badgeWidth - 6;
+                const badgeY = yPos - badgeHeight - 2;
+
+                ctx.fillStyle = 'rgba(244, 63, 94, 0.9)';
+                ctx.beginPath();
+                ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, badgeX + badgeWidth / 2, badgeY + badgeHeight / 2);
+                ctx.restore();
+            }
+        };
+
+        // Baseline reference line plugin for Chart 1
+        const baselineLinePlugin = {
+            id: 'baselineLinePlugin',
+            afterDraw: (chart) => {
+                const baseVal = parseFloat(document.getElementById('baselineIcp')?.value) || 10;
+                const yAxis = chart.scales.y;
+                const xAxis = chart.scales.x;
+
+                if (isNaN(baseVal) || baseVal < yAxis.min || baseVal > yAxis.max) return;
+
+                const yPos = yAxis.getPixelForValue(baseVal);
+                const ctx = chart.ctx;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.6)';
+                ctx.lineWidth = 1.4;
+                ctx.moveTo(xAxis.left, yPos);
+                ctx.lineTo(xAxis.right, yPos);
+                ctx.stroke();
+
+                const label = `Baseline P_b: ${baseVal.toFixed(1)} mmHg`;
+                ctx.font = '10px Inter, sans-serif';
+                ctx.fillStyle = 'rgba(148, 163, 184, 0.9)';
+                ctx.fillText(label, xAxis.left + 6, yPos - 4);
+                ctx.restore();
+            }
+        };
+
+        if (typeof Chart !== 'undefined') {
+            Chart.register(chartMarkerPlugin);
+        }
+
+        // --- Initialization ---
+        
+        // About Modal handlers
+        const aboutModal = document.getElementById('about-modal');
+        const aboutBtn = document.getElementById('about-btn');
+        const closeAboutBtn = document.getElementById('close-about-btn');
+
+        if (aboutBtn && aboutModal) {
+            aboutBtn.addEventListener('click', () => {
+                aboutModal.classList.add('active');
+            });
+        }
+        if (closeAboutBtn && aboutModal) {
+            closeAboutBtn.addEventListener('click', () => {
+                aboutModal.classList.remove('active');
+            });
+        }
+        if (aboutModal) {
+            aboutModal.addEventListener('click', (e) => {
+                if (e.target === aboutModal) aboutModal.classList.remove('active');
+            });
+        }
+
+        function initApp() {
+            const today = new Date().toISOString().split('T')[0];
+            const studyDateEl = document.getElementById('studyDate');
+            if (studyDateEl) studyDateEl.value = today;
+
+            renderTable();
+            updateAll();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+
+        // --- Table Operations ---
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
+
+            readings.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                const deltaP = row.icp - pb;
+                const lnDeltaP = deltaP > 0 ? Math.log(deltaP).toFixed(3) : '--';
+
+                tr.innerHTML = `
+                    <td>
+                        <input type="number" step="0.1" class="table-input" value="${row.time.toFixed(1)}" onchange="updateRowTime(${idx}, this.value)">
+                    </td>
+                    <td>
+                        <input type="number" step="0.5" class="table-input" value="${row.icp.toFixed(1)}" onchange="updateRowIcp(${idx}, this.value)">
+                    </td>
+                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: ${deltaP >= 0 ? 'var(--accent-cyan)' : 'var(--accent-rose)'};">
+                        ${deltaP >= 0 ? '+' : ''}${deltaP.toFixed(1)}
+                    </td>
+                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--accent-emerald);">
+                        ${lnDeltaP}
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="btn-table-action" onclick="deleteRow(${idx})" title="Delete reading">&times;</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('rowCountBadge').textContent = `${readings.length} Readings`;
+        }
+
+        function updateRowTime(idx, val) {
+            const num = parseFloat(val);
+            if (!isNaN(num)) {
+                readings[idx].time = Math.max(0, num);
+                updateAll();
+            }
+        }
+
+        function updateRowIcp(idx, val) {
+            const num = parseFloat(val);
+            if (!isNaN(num)) {
+                readings[idx].icp = num;
+                if (idx === 0 && readings[0].time === 0) {
+                    document.getElementById('peakIcp').value = num.toFixed(1);
+                }
+                updateAll();
+            }
+        }
+
+        function addRow() {
+            let nextTime = 0.0;
+            let nextIcp = 15.0;
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
+
+            if (readings.length > 0) {
+                const last = readings[readings.length - 1];
+                nextTime = +(last.time + 1.0).toFixed(1);
+                nextIcp = +(Math.max(pb, pb + (last.icp - pb) * 0.8)).toFixed(1);
+            }
+
+            readings.push({ time: nextTime, icp: nextIcp });
+            sortRowsByTime(false);
+            renderTable();
+            updateAll();
+        }
+
+        function deleteRow(idx) {
+            if (readings.length <= 2) {
+                alert('A minimum of two readings is required for decay fitting.');
+                return;
+            }
+            readings.splice(idx, 1);
+            renderTable();
+            updateAll();
+        }
+
+        function clearTable() {
+            if (confirm('Clear all readings?')) {
+                const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
+                const ppeak = parseFloat(document.getElementById('peakIcp').value) || 26.0;
+                readings = [
+                    { time: 0.0, icp: ppeak },
+                    { time: 2.0, icp: +(pb + (ppeak - pb) * 0.6).toFixed(1) }
+                ];
+                renderTable();
+                updateAll();
+            }
+        }
+
+        function sortRowsByTime(reRender = true) {
+            readings.sort((a, b) => a.time - b.time);
+            if (reRender) {
+                renderTable();
+                updateAll();
+            }
+        }
+
+        // --- Presets ---
+        function loadPreset(key) {
+            if (key === 'normal') {
+                document.getElementById('bolusVolume').value = "10.0";
+                document.getElementById('baselineIcp').value = "10.0";
+                document.getElementById('peakIcp').value = "26.0";
+                document.getElementById('safetyThreshold').value = "30";
+                // tau = 4.5 min, Rout = tau / C = 4.5 / (10/16) = 7.2
+                readings = [
+                    { time: 0.0, icp: 26.0 },
+                    { time: 0.5, icp: 24.3 },
+                    { time: 1.0, icp: 22.8 },
+                    { time: 1.5, icp: 21.4 },
+                    { time: 2.0, icp: 20.2 },
+                    { time: 2.5, icp: 19.1 },
+                    { time: 3.0, icp: 18.1 },
+                    { time: 4.0, icp: 16.5 },
+                    { time: 5.0, icp: 15.2 },
+                    { time: 6.0, icp: 14.1 },
+                    { time: 8.0, icp: 12.6 },
+                    { time: 10.0, icp: 11.7 }
+                ];
+            } else if (key === 'nph') {
+                document.getElementById('bolusVolume').value = "10.0";
+                document.getElementById('baselineIcp').value = "12.0";
+                document.getElementById('peakIcp').value = "32.0";
+                document.getElementById('safetyThreshold').value = "30";
+                // tau = 8.0 min, Rout = 8.0 / (10/20) = 16.0
+                readings = [
+                    { time: 0.0, icp: 32.0 },
+                    { time: 0.5, icp: 30.8 },
+                    { time: 1.0, icp: 29.6 },
+                    { time: 2.0, icp: 27.6 },
+                    { time: 3.0, icp: 25.8 },
+                    { time: 4.0, icp: 24.1 },
+                    { time: 5.0, icp: 22.7 },
+                    { time: 6.0, icp: 21.4 },
+                    { time: 8.0, icp: 19.3 },
+                    { time: 10.0, icp: 17.7 },
+                    { time: 12.0, icp: 16.5 },
+                    { time: 15.0, icp: 15.0 }
+                ];
+            } else if (key === 'stiff') {
+                document.getElementById('bolusVolume').value = "5.0";
+                document.getElementById('baselineIcp').value = "14.0";
+                document.getElementById('peakIcp').value = "40.0";
+                document.getElementById('safetyThreshold').value = "30";
+                // C = 5 / 26 = 0.192, tau = 3.5 min, Rout = 3.5 / 0.192 = 18.2
+                readings = [
+                    { time: 0.0, icp: 40.0 },
+                    { time: 0.5, icp: 36.6 },
+                    { time: 1.0, icp: 33.6 },
+                    { time: 1.5, icp: 31.0 },
+                    { time: 2.0, icp: 28.7 },
+                    { time: 2.5, icp: 26.8 },
+                    { time: 3.0, icp: 25.1 },
+                    { time: 4.0, icp: 22.3 },
+                    { time: 5.0, icp: 20.2 },
+                    { time: 6.0, icp: 18.7 },
+                    { time: 8.0, icp: 16.6 }
+                ];
+            } else if (key === 'bolus5') {
+                document.getElementById('bolusVolume').value = "5.0";
+                document.getElementById('baselineIcp').value = "10.0";
+                document.getElementById('peakIcp').value = "22.0";
+                document.getElementById('safetyThreshold').value = "30";
+                // C = 5 / 12 = 0.417, tau = 3.2 min, Rout = 7.68
+                readings = [
+                    { time: 0.0, icp: 22.0 },
+                    { time: 0.5, icp: 20.3 },
+                    { time: 1.0, icp: 18.8 },
+                    { time: 1.5, icp: 17.5 },
+                    { time: 2.0, icp: 16.4 },
+                    { time: 3.0, icp: 14.7 },
+                    { time: 4.0, icp: 13.4 },
+                    { time: 5.0, icp: 12.5 },
+                    { time: 6.0, icp: 11.8 }
+                ];
+            }
+            renderTable();
+            updateAll();
+        }
+
+        // --- Core Mathematical Calculations ---
+
+        // 1. PVI: deltaV / log10(Ppeak / Pb)
+        function calculatePVI(deltaV, pb, ppeak) {
+            const ratio = ppeak / pb;
+            if (ratio <= 0 || ratio === 1) return 0;
+            const logRatio = Math.abs(Math.log10(ratio));
+            if (logRatio === 0) return 0;
+            return Math.abs(deltaV) / logRatio;
+        }
+
+        // 2. Compliance: C = deltaV / (Ppeak - Pb)
+        function calculateCompliance(deltaV, pb, ppeak) {
+            const deltaP = ppeak - pb;
+            if (deltaP <= 0) return 0;
+            return deltaV / deltaP;
+        }
+
+        // 3. Linear Regression of ln[P(t) - Pb] vs t: slope = -1 / tau
+        function calculateLinearRegressionTau(pb, ppeak) {
+            const validPoints = [];
+            readings.forEach(r => {
+                const delta = r.icp - pb;
+                if (delta > 0.05) {
+                    validPoints.push({ t: r.time, y: Math.log(delta) });
+                }
+            });
+
+            if (validPoints.length < 2) {
+                return { tau: 5.0, r2: 0, slope: -0.2, intercept: Math.log(Math.max(1, ppeak - pb)) };
+            }
+
+            const n = validPoints.length;
+            let sumT = 0, sumY = 0, sumTY = 0, sumT2 = 0, sumY2 = 0;
+
+            validPoints.forEach(p => {
+                sumT += p.t;
+                sumY += p.y;
+                sumTY += p.t * p.y;
+                sumT2 += p.t * p.t;
+                sumY2 += p.y * p.y;
+            });
+
+            const denom = (n * sumT2 - sumT * sumT);
+            if (denom === 0) return { tau: 5.0, r2: 0, slope: -0.2, intercept: 0 };
+
+            const slope = (n * sumTY - sumT * sumY) / denom;
+            const intercept = (sumY - slope * sumT) / n;
+
+            // R^2 calculation
+            const yMean = sumY / n;
+            let ssTot = 0, ssRes = 0;
+            validPoints.forEach(p => {
+                const pred = intercept + slope * p.t;
+                ssTot += (p.y - yMean) * (p.y - yMean);
+                ssRes += (p.y - pred) * (p.y - pred);
+            });
+            const r2 = ssTot > 0 ? Math.max(0, 1 - ssRes / ssTot) : 0;
+
+            // slope = -1 / tau  => tau = -1 / slope
+            let tau = slope < 0 ? -1 / slope : 5.0;
+            return { tau: Math.max(0.1, tau), r2, slope, intercept, validPoints };
+        }
+
+        // 4. Numerical Integration: AUC = integral of [P(t) - Pb] dt (Trapezoidal Rule)
+        function calculateTrapezoidalAUC(pb, tau, ppeak) {
+            if (readings.length < 2) return (ppeak - pb) * tau;
+
+            let auc = 0;
+            for (let i = 0; i < readings.length - 1; i++) {
+                const dt = readings[i + 1].time - readings[i].time;
+                const dP1 = Math.max(0, readings[i].icp - pb);
+                const dP2 = Math.max(0, readings[i + 1].icp - pb);
+                auc += 0.5 * (dP1 + dP2) * dt;
+            }
+
+            // Analytical tail extrapolation from last reading to infinity using tau
+            const lastReading = readings[readings.length - 1];
+            const dPlast = Math.max(0, lastReading.icp - pb);
+            const tailAuc = dPlast * tau;
+
+            return auc + tailAuc;
+        }
+
+        // --- Master Update Pipeline ---
+        function updateAll() {
+            const vInf = parseFloat(document.getElementById('bolusVolume').value) || 10.0;
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
+            const ppeak = parseFloat(document.getElementById('peakIcp').value) || 26.0;
+            const safetyThresh = parseFloat(document.getElementById('safetyThreshold').value) || 30.0;
+
+            // Sync first table row if time is 0
+            if (readings.length > 0 && readings[0].time === 0) {
+                readings[0].icp = ppeak;
+            }
+
+            // 1. PVI: DeltaV / log10(Ppeak / Pb)
+            const pvi = calculatePVI(vInf, pb, ppeak);
+            document.getElementById('valPvi').textContent = `${pvi.toFixed(1)} mL`;
+
+            const badgePvi = document.getElementById('badgePvi');
+            if (pvi >= 18) {
+                badgePvi.className = 'metric-badge badge-normal';
+                badgePvi.textContent = 'Normal Adult';
+            } else if (pvi >= 13) {
+                badgePvi.className = 'metric-badge badge-warning';
+                badgePvi.textContent = 'Borderline';
+            } else {
+                badgePvi.className = 'metric-badge badge-danger';
+                badgePvi.textContent = 'Reduced Compliance';
+            }
+
+            // 2. Intracranial Compliance C = Vinf / (Ppeak - Pb)
+            const compliance = calculateCompliance(vInf, pb, ppeak);
+            document.getElementById('valCompliance').innerHTML = `${compliance.toFixed(3)} <span style="font-size: 13px;">mL/mmHg</span>`;
+
+            // 3. Time Constant Tau via Linear Regression of ln[P - Pb] vs t
+            const reg = calculateLinearRegressionTau(pb, ppeak);
+            const tau = reg.tau;
+            document.getElementById('valTau').innerHTML = `${tau.toFixed(2)} <span style="font-size: 16px;">min</span>`;
+
+            // 4. Area Under the Curve (AUC)
+            const auc = calculateTrapezoidalAUC(pb, tau, ppeak);
+            document.getElementById('valAuc').innerHTML = `${auc.toFixed(1)} <span style="font-size: 13px;">mmHg&middot;min</span>`;
+
+            // 5. Outflow Resistance Rout = AUC / Vinf = tau / C
+            // Rout using tau / C (exact analytical formulation from Marmarou exponential model)
+            const rout = compliance > 0 ? tau / compliance : 0;
+            document.getElementById('valRout').innerHTML = `${rout.toFixed(2)} <span style="font-size: 16px;">mmHg&middot;min/mL</span>`;
+
+            const badgeRout = document.getElementById('badgeRout');
+            if (rout < 10) {
+                badgeRout.className = 'metric-badge badge-normal';
+                badgeRout.textContent = 'Normal';
+            } else if (rout <= 12) {
+                badgeRout.className = 'metric-badge badge-warning';
+                badgeRout.textContent = 'Borderline';
+            } else {
+                badgeRout.className = 'metric-badge badge-danger';
+                badgeRout.textContent = 'Pathological';
+            }
+
+            // 6. Goodness of Fit R² & Slope
+            document.getElementById('valR2').textContent = `R² = ${reg.r2.toFixed(3)}`;
+            document.getElementById('badgeR2').textContent = `Slope: ${reg.slope.toFixed(3)}`;
+            document.getElementById('graph4SlopeBadge').textContent = `Slope = ${reg.slope.toFixed(3)} ( -1/τ )`;
+
+            // 7. Half-time t1/2 = tau * ln(2)
+            const tHalf = tau * 0.693147;
+            const pHalf = pb + (ppeak - pb) * 0.5;
+            document.getElementById('valHalfTime').innerHTML = `${tHalf.toFixed(2)} <span style="font-size: 13px;">min</span>`;
+            document.getElementById('subHalfPressure').textContent = `Time to 50% recovery (P½: ${pHalf.toFixed(1)} mmHg).`;
+
+            // 8. Safety Threshold Check
+            const maxObservedIcp = Math.max(ppeak, ...readings.map(r => r.icp));
+            const badgeSafety = document.getElementById('badgeSafety');
+            const valSafety = document.getElementById('valSafetyStatus');
+            const cardSafety = document.getElementById('cardSafetyStatus');
+            const subSafety = document.getElementById('subSafetyThreshold');
+
+            subSafety.textContent = `Configured threshold: ${safetyThresh.toFixed(1)} mmHg.`;
+
+            if (maxObservedIcp > safetyThresh) {
+                badgeSafety.className = 'metric-badge badge-danger';
+                badgeSafety.textContent = 'ALERT';
+                valSafety.textContent = `EXCEEDED (${maxObservedIcp.toFixed(1)})`;
+                valSafety.style.color = 'var(--accent-rose)';
+                cardSafety.classList.add('alert');
+            } else {
+                badgeSafety.className = 'metric-badge badge-normal';
+                badgeSafety.textContent = 'SAFE';
+                valSafety.textContent = `OK (Max ${maxObservedIcp.toFixed(1)})`;
+                valSafety.style.color = 'var(--accent-emerald)';
+                cardSafety.classList.remove('alert');
+            }
+
+            document.getElementById('graph1PeakBadge').textContent = `Peak: ${ppeak.toFixed(1)} mmHg`;
+            document.getElementById('graph1TauBadge').textContent = `τ = ${tau.toFixed(2)} min`;
+            document.getElementById('graph1SafetyBadge').textContent = `Safety: ${safetyThresh.toFixed(0)} mmHg`;
+
+            // 9. Update Charts
+            renderCharts(pb, ppeak, tau, safetyThresh, reg);
+        }
+
+        // --- Chart Rendering Engine ---
+        function renderCharts(pb, ppeak, tau, safetyThresh, reg) {
+            if (typeof Chart === 'undefined') return;
+
+            const maxDataTime = Math.max(6.0, ...readings.map(r => r.time));
+            const maxPlotTime = Math.max(maxDataTime, tau * 2.5) * 1.05;
+            const numCurvePoints = 100;
+            const timeStep = maxPlotTime / numCurvePoints;
+
+            const deltaP0 = ppeak - pb;
+            const curveData = [];
+            const d1Data = [];
+            const d2Data = [];
+
+            let initialDecayRate = deltaP0 / tau;
+
+            for (let i = 0; i <= numCurvePoints; i++) {
+                const t = i * timeStep;
+                // P(t) = Pb + (Ppeak - Pb) * exp(-t / tau)
+                const expTerm = Math.exp(-t / tau);
+                const pt = pb + deltaP0 * expTerm;
+                curveData.push({ x: +t.toFixed(2), y: +pt.toFixed(2) });
+
+                // dP/dt = - (Ppeak - Pb) / tau * exp(-t / tau)
+                const dpdt = - (deltaP0 / tau) * expTerm;
+                d1Data.push({ x: +t.toFixed(2), y: +dpdt.toFixed(2) });
+
+                // d2P/dt2 = (Ppeak - Pb) / tau^2 * exp(-t / tau)
+                const d2pdt2 = (deltaP0 / (tau * tau)) * expTerm;
+                d2Data.push({ x: +t.toFixed(2), y: +d2pdt2.toFixed(3) });
+            }
+
+            document.getElementById('graph2MaxRateBadge').textContent = `Initial Rate: -${initialDecayRate.toFixed(2)} mmHg/min`;
+
+            const empiricalPoints = readings.map(r => ({ x: r.time, y: r.icp }));
+
+            // Common Theme Colors
+            const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+            const tickColor = isDark ? '#94a3b8' : '#64748b';
+
+            // --- Chart 1: P(t) ---
+            const ctx1 = document.getElementById('chart1').getContext('2d');
+            if (chart1Instance) chart1Instance.destroy();
+
+            // Tau recovery pressure: Pb + (Ppeak - Pb) / e
+            const pTau = pb + deltaP0 / Math.E;
+
+            chart1Instance = new Chart(ctx1, {
+                type: 'line',
+                plugins: [safetyThresholdPlugin, baselineLinePlugin],
+                data: {
+                    datasets: [
+                        {
+                            label: 'Mono-Exponential Decay P(t)',
+                            data: curveData,
+                            borderColor: '#06b6d4',
+                            borderWidth: 2.8,
+                            pointRadius: 0,
+                            tension: 0.25,
+                            fill: {
+                                target: 'origin',
+                                above: isDark ? 'rgba(6, 182, 212, 0.08)' : 'rgba(6, 182, 212, 0.04)'
+                            }
+                        },
+                        {
+                            label: 'Empirical ICP Readings',
+                            data: empiricalPoints,
+                            borderColor: '#38bdf8',
+                            backgroundColor: '#38bdf8',
+                            pointRadius: 5.5,
+                            pointHoverRadius: 8,
+                            showLine: false
+                        },
+                        {
+                            label: `τ Marker (${tau.toFixed(2)} min, ${pTau.toFixed(1)} mmHg)`,
+                            data: [{ x: +tau.toFixed(2), y: +pTau.toFixed(1) }],
+                            borderColor: '#f59e0b',
+                            backgroundColor: '#f59e0b',
+                            pointRadius: 7.5,
+                            pointStyle: 'rectRot',
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    plugins: {
+                        legend: {
+                            labels: { color: tickColor, font: { size: 11 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} mmHg at t=${ctx.parsed.x} min`
+                            }
+                        },
+                        chartMarker: {
+                            xValue: +tau.toFixed(2),
+                            label: `τ = ${tau.toFixed(2)} min`,
+                            color: '#f59e0b',
+                            badgeBg: 'rgba(245, 158, 11, 0.9)'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Time post-bolus (minutes)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        },
+                        y: {
+                            title: { display: true, text: 'Intracranial Pressure (mmHg)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor },
+                            suggestedMin: Math.max(0, pb - 4),
+                            suggestedMax: Math.max(ppeak, safetyThresh) + 6
+                        }
+                    }
+                }
+            });
+
+            // --- Chart 2: dP/dt ---
+            const ctx2 = document.getElementById('chart2').getContext('2d');
+            if (chart2Instance) chart2Instance.destroy();
+
+            chart2Instance = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Instantaneous Rate of Pressure Change dP/dt (mmHg/min)',
+                            data: d1Data,
+                            borderColor: '#f59e0b',
+                            borderWidth: 2.2,
+                            pointRadius: 0,
+                            tension: 0.25,
+                            fill: {
+                                target: 'origin',
+                                above: 'rgba(245, 158, 11, 0.08)',
+                                below: 'rgba(245, 158, 11, 0.08)'
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    plugins: {
+                        legend: { labels: { color: tickColor, font: { size: 11 } } },
+                        chartMarker: {
+                            xValue: +tau.toFixed(2),
+                            label: `τ = ${tau.toFixed(2)} min`,
+                            color: '#f59e0b',
+                            badgeBg: 'rgba(245, 158, 11, 0.9)'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Time post-bolus (minutes)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        },
+                        y: {
+                            title: { display: true, text: 'dP/dt (mmHg/min)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        }
+                    }
+                }
+            });
+
+            // --- Chart 3: d2P/dt2 ---
+            const ctx3 = document.getElementById('chart3').getContext('2d');
+            if (chart3Instance) chart3Instance.destroy();
+
+            chart3Instance = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Curvature & Deceleration d²P/dt² (mmHg/min²)',
+                            data: d2Data,
+                            borderColor: '#a855f7',
+                            borderWidth: 2.2,
+                            pointRadius: 0,
+                            tension: 0.25,
+                            fill: {
+                                target: 'origin',
+                                above: 'rgba(168, 85, 247, 0.08)'
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    plugins: {
+                        legend: { labels: { color: tickColor, font: { size: 11 } } },
+                        chartMarker: {
+                            xValue: +tau.toFixed(2),
+                            label: `τ = ${tau.toFixed(2)} min`,
+                            color: '#f59e0b',
+                            badgeBg: 'rgba(245, 158, 11, 0.9)'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Time post-bolus (minutes)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        },
+                        y: {
+                            title: { display: true, text: 'd²P/dt² (mmHg/min²)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        }
+                    }
+                }
+            });
+
+            // --- Chart 4: Log Linearization Plot (ln[P(t) - Pb] vs t) ---
+            const ctx4 = document.getElementById('chart4').getContext('2d');
+            if (chart4Instance) chart4Instance.destroy();
+
+            const logScatter = [];
+            readings.forEach(r => {
+                const delta = r.icp - pb;
+                if (delta > 0.05) {
+                    logScatter.push({ x: r.time, y: +Math.log(delta).toFixed(3) });
+                }
+            });
+
+            const logLine = [
+                { x: 0, y: +reg.intercept.toFixed(3) },
+                { x: +maxPlotTime.toFixed(1), y: +(reg.intercept + reg.slope * maxPlotTime).toFixed(3) }
+            ];
+
+            chart4Instance = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: `Fitted Linear Regression (Slope = ${reg.slope.toFixed(3)} = -1/τ, R² = ${reg.r2.toFixed(3)})`,
+                            data: logLine,
+                            borderColor: '#10b981',
+                            borderWidth: 2.2,
+                            borderDash: [5, 4],
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Empirical ln[P(t) - Pb]',
+                            data: logScatter,
+                            borderColor: '#34d399',
+                            backgroundColor: '#34d399',
+                            pointRadius: 5.5,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    plugins: {
+                        legend: { labels: { color: tickColor, font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Time t (minutes)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        },
+                        y: {
+                            title: { display: true, text: 'ln[P(t) - Pb]', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- Theme Toggle ---
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const target = current === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', target);
+
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (target === 'light') {
+                icon.textContent = '🌙';
+                label.textContent = 'Dark Mode';
+            } else {
+                icon.textContent = '☀️';
+                label.textContent = 'Light Mode';
+            }
+            updateAll();
+        }
+
+        // --- Modals ---
+        function openMathModal() {
+            document.getElementById('mathModal').style.display = 'flex';
+        }
+
+        function closeMathModal(event) {
+            if (!event || event.target.id === 'mathModal' || event.target.className === 'btn-close') {
+                document.getElementById('mathModal').style.display = 'none';
+            }
+        }
+
+        // --- Export Functions ---
+        function generateReportText() {
+            const patientId = document.getElementById('patientId').value || 'N/A';
+            const studyDate = document.getElementById('studyDate').value || 'N/A';
+            const route = document.getElementById('accessRoute').value;
+            const vInf = document.getElementById('bolusVolume').value;
+            const pb = document.getElementById('baselineIcp').value;
+            const ppeak = document.getElementById('peakIcp').value;
+            const safety = document.getElementById('safetyThreshold').value;
+
+            const pvi = document.getElementById('valPvi').textContent;
+            const rout = document.getElementById('valRout').textContent.replace(/\s+/g, ' ');
+            const tau = document.getElementById('valTau').textContent.replace(/\s+/g, ' ');
+            const compliance = document.getElementById('valCompliance').textContent.replace(/\s+/g, ' ');
+            const auc = document.getElementById('valAuc').textContent.replace(/\s+/g, ' ');
+            const r2 = document.getElementById('valR2').textContent;
+
+            let report = `=====================================================
+`;
+            report += `CSF BOLUS STUDY (MARMAROU MONO-EXPONENTIAL DECAY MODEL)
+`;
+            report += `=====================================================
+`;
+            report += `Patient ID:          ${patientId}
+`;
+            report += `Study Date:          ${studyDate}
+`;
+            report += `Access Route:        ${route}
+`;
+            report += `Bolus Volume V_inf:  ${vInf} mL
+`;
+            report += `Baseline ICP P_b:    ${pb} mmHg
+`;
+            report += `Peak ICP P_peak:     ${ppeak} mmHg
+`;
+            report += `Safety Threshold:    ${safety} mmHg
+
+`;
+
+            report += `--- PRIMARY MARMAROU CALCULATIONS ---
+`;
+            report += `1) Pressure-Volume Index (PVI):      ${pvi}
+`;
+            report += `2) Outflow Resistance (R_out):       ${rout}
+`;
+            report += `3) Time Constant of Decay (tau):     ${tau}
+
+`;
+
+            report += `--- SECONDARY BIOMECHANICAL PARAMETERS ---
+`;
+            report += `Intracranial Compliance (C):         ${compliance}
+`;
+            report += `Area Under Curve (AUC):              ${auc}
+`;
+            report += `Exponential Regression Goodness:     ${r2}
+
+`;
+
+            report += `--- RECORDED PRESSURE DECAY TIME SERIES ---
+`;
+            report += `Time (min) | ICP (mmHg) | P(t) - P_b | ln[P - P_b]
+`;
+            report += `---------------------------------------------------
+`;
+            readings.forEach(r => {
+                const dp = (r.icp - parseFloat(pb)).toFixed(1);
+                const lndp = (r.icp - parseFloat(pb)) > 0 ? Math.log(r.icp - parseFloat(pb)).toFixed(3) : '--';
+                report += `${r.time.toFixed(1).padEnd(10)} | ${r.icp.toFixed(1).padEnd(10)} | ${(dp >= 0 ? '+' : '') + dp.padEnd(9)} | ${lndp}
+`;
+            });
+
+            report += `
+-----------------------------------------------------
+`;
+            report += `Software Developed by Dr G Narenthiran FRCS(SN)
+`;
+            report += `Dedicated to my mother Mrs Nirmaladevy Ganesalingam BSc
+`;
+            report += `Disclaimer: The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+`;
+            report += `=====================================================
+`;
+
+            return report;
+        }
+
+        function copyClinicalReport() {
+            const text = generateReportText();
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Clinical report successfully copied to clipboard!');
+            }).catch(() => {
+                prompt('Copy clinical report:', text);
+            });
+        }
+
+        function emailReport() {
+            const subject = encodeURIComponent(`CSF Bolus Study Report - ${document.getElementById('patientId').value}`);
+            const body = encodeURIComponent(generateReportText());
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        function exportCsv() {
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10;
+            let csv = "Time (min),Measured ICP (mmHg),Delta P (mmHg),ln(Delta P)\n";
+            readings.forEach(r => {
+                const dp = r.icp - pb;
+                const lndp = dp > 0 ? Math.log(dp).toFixed(4) : '';
+                csv += `${r.time.toFixed(2)},${r.icp.toFixed(2)},${dp.toFixed(2)},${lndp}
+`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `CSF_Bolus_${document.getElementById('patientId').value || 'Study'}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

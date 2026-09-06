@@ -1,6 +1,6 @@
-# CSF Bolus Study Calculator (Marmarou Model: PVI, $R_{out}$, Compliance & Elastance)
+# CSF Bolus Study Calculator (PVI, $R_{out}$, & Time Constant $\tau$)
 
-An interactive neurosurgical clinical calculator for recording and analyzing the **Marmarou CSF Bolus Injection and Withdrawal Test**, computing the **Pressure-Volume Index (PVI)**, **Resistance to CSF Outflow ($R_{out}$)**, **Intracranial Compliance ($C_0$)**, and **Elastance ($E_0$)**, with continuous kinetic curve fitting, first and second order differential analysis, and real-time interactive scientific visualizations.
+An interactive neurosurgical clinical calculator for recording and analyzing the **Marmarou CSF Bolus Injection Test**, computing the **Pressure-Volume Index (PVI)**, **Resistance to CSF Outflow ($R_{out}$)**, and the **Time Constant of Pressure Decay ($\tau$)**, paired with continuous mono-exponential decay curve fitting, 1st/2nd order differential analysis, and semi-logarithmic linear regression.
 
 Developed by **Dr G Narenthiran MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN)**, Neurosurgery Research Listserv, UK.
 
@@ -10,96 +10,91 @@ Developed by **Dr G Narenthiran MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN)**, Neuro
 
 ## 🔬 Clinical Principles & Mathematical Framework
 
-### 1. Pressure-Volume Index (PVI)
-Introduced by Anthony Marmarou and colleagues (1975, 1978), the **Pressure-Volume Index (PVI)** characterizes the steepness of the exponential intracranial pressure-volume curve. It represents the theoretical volume of fluid increment ($\Delta V$) required to raise the baseline intracranial pressure ($P_0$) by one full decade (a factor of 10):
+In a bolus injection infusion test, a discrete volume ($V_{inf}$) is introduced rapidly (over a few seconds) rather than continuously. Because a bolus creates a transient pressure spike followed by an exponential decay rather than a steady-state plateau, Anthony Marmarou’s mathematical model is used to analyze the entire pressure-time recovery curve.
 
-$$\text{PVI} = \frac{\Delta V}{\log_{10}\left(\frac{P_p}{P_0}\right)} \quad [\text{mL}]$$
+### 1. Intracranial Compliance ($C$) & Baseline ICP ($P_b$)
+- **Baseline Intracranial Pressure ($P_b$):** The resting steady-state pressure prior to the perturbation, which contextualizes whether baseline intracranial hypertension exists.
+- **Intracranial Compliance ($C$):** Compliance represents the spatial buffering capacity of the intracranial space—its ability to accommodate volume changes without sharp rises in pressure. Derived from the immediate pressure-volume response:
+  $$C = \frac{\Delta V}{P_{peak} - P_b} \quad [\text{mL}/\text{mmHg}]$$
+  *Significance:* Low compliance indicates the intracranial vault is "stiff," and even small volume additions trigger dangerous spikes in pressure.
 
-- $\Delta V$: Injected fluid bolus volume in mL (typically 3.0 to 5.0 mL of preservative-free 0.9% saline) or withdrawn CSF volume.
-- $P_0$: Baseline opening pressure (resting ICP) prior to bolus delivery (mmHg).
-- $P_p$: Immediate peak intracranial pressure attained upon bolus completion (mmHg).
+---
 
-#### Adult Diagnostic Thresholds:
-| PVI Value | Mechanical Interpretation | Clinical Implications |
+### 2. Pressure-Volume Index (PVI)
+Introduced by Marmarou et al. (1975, 1978), the **PVI** characterizes the exponential pressure-volume curve slope, defined as the volume increment required to raise baseline pressure tenfold:
+$$\text{PVI} = \frac{\Delta V}{\log_{10}\left(\frac{P_{peak}}{P_b}\right)} \quad [\text{mL}]$$
+
+- **Normal Adult:** $> 18 \text{ mL}$ (mean $\approx 25 \text{ mL}$)
+- **Borderline / Elderly:** $13 - 18 \text{ mL}$
+- **Pathological / Low Compliance:** $< 13 \text{ mL}$
+
+---
+
+### 3. Time Constant of Pressure Decay ($\tau$)
+Following bolus injection, the pressure decay curve closely follows a mono-exponential relaxation function:
+$$P(t) = P_b + (P_{peak} - P_b) \cdot e^{-t / \tau}$$
+
+The time constant $\tau$ represents the rate at which pressure returns to baseline:
+$$\tau = R_{out} \times C \quad [\text{min}]$$
+*Significance:* A prolonged time constant signifies sluggish CSF absorption kinetics across the arachnoid villi into the dural venous sinuses.
+
+#### Practical Determination of $\tau$:
+1. **Linear Regression of Logarithmic Decay:**
+   Taking the natural logarithm of the excess pressure above baseline:
+   $$\ln[P(t) - P_b] = \ln(P_{peak} - P_b) - \frac{1}{\tau} \cdot t$$
+   Plotting $\ln[P(t) - P_b]$ against time $t$ yields a straight line with slope:
+   $$\text{Slope} = -\frac{1}{\tau} \implies \tau = -\frac{1}{\text{Slope}}$$
+2. **Integral Area Under the Curve (AUC):**
+   For a pure mono-exponential decay:
+   $$\text{AUC} = \int_{0}^{\infty} [P(t) - P_b] \, dt = (P_{peak} - P_b) \cdot \tau \implies \tau = \frac{\text{AUC}}{P_{peak} - P_b}$$
+
+---
+
+### 4. Resistance to CSF Outflow ($R_{out}$)
+The fundamental equation calculates $R_{out}$ by dividing the total pressure-time integral (the area under the recovery curve above baseline) by the volume of the injected bolus ($V_{inf}$):
+$$R_{out} = \frac{\int_{0}^{\infty} [P(t) - P_b] \, dt}{V_{inf}} = \frac{\text{AUC}}{V_{inf}}$$
+
+Since $\text{AUC} = (P_{peak} - P_b) \cdot \tau$ and $C = \frac{V_{inf}}{P_{peak} - P_b}$, the outflow resistance simplifies directly to:
+$$R_{out} = \frac{\tau}{C} \quad [\text{mmHg}\cdot\text{min}/\text{mL}]$$
+
+#### Clinical Thresholds:
+| $R_{out}$ Value | Interpretation | Recommendation |
 |---|---|---|
-| **$> 18 \text{ mL}$** | **Normal Cranial Compliance** | Preserved intracranial spatial buffering reserve. |
-| **$13 - 18 \text{ mL}$** | **Borderline Compliance** | Moderate depletion of compensatory reserve (frequently noted in elderly/iNPH). |
-| **$< 13 \text{ mL}$** | **Severely Reduced Compliance / High Elastance** | Critical exhaustion of craniospinal compliance; small volume additions produce steep, dangerous ICP spikes. |
+| **$< 10 - 12 \text{ mmHg}\cdot\text{min}/\text{mL}$** | **Normal** | Low probability of shunt benefit based on resistance alone. |
+| **$10 - 12 \text{ mmHg}\cdot\text{min}/\text{mL}$** | **Borderline** | Equivocal; correlate with clinical tap test and DESH neuroimaging. |
+| **$> 12 - 18 \text{ mmHg}\cdot\text{min}/\text{mL}$** | **Pathological** | Impaired CSF absorption capacity; supports diagnosis of communicating hydrocephalus or NPH with high probability of shunt response. |
 
 ---
 
-### 2. Intracranial Elastance ($E_0$) & Compliance ($C_0$)
-Because intracranial pressure varies exponentially with added volume ($P = P_0 \cdot 10^{\Delta V / \text{PVI}}$), intracranial elastance ($\frac{dP}{dV}$) increases linearly with instantaneous pressure:
-
-$$\frac{dP}{dV} = \frac{\ln(10)}{\text{PVI}} \cdot P = \frac{2.3026}{\text{PVI}} \cdot P$$
-
-At baseline resting pressure $P_0$:
-- **Baseline Elastance ($E_0$)**:
-  $$E_0 = \frac{2.3026 \cdot P_0}{\text{PVI}} \quad [\text{mmHg}/\text{mL}]$$
-
-- **Baseline Intracranial Compliance ($C_0$)**:
-  $$C_0 = \frac{1}{E_0} = \frac{\text{PVI}}{2.3026 \cdot P_0} \quad [\text{mL}/\text{mmHg}]$$
-
----
-
-### 3. Resistance to CSF Outflow ($R_{out}$) via Pressure Decay
-Following rapid bolus injection, intracranial pressure rises to $P_p$ and subsequently decays toward baseline $P_0$ as fluid is absorbed across the arachnoid villi into the dural venous sinuses. 
-
-Marmarou's non-linear differential equation describes the rate of pressure decay:
-$$\frac{dP}{dt} = - \frac{2.3026 \cdot P(t) \cdot (P(t) - P_0)}{\text{PVI} \cdot R_{out}}$$
-
-Integrating this relationship yields the instantaneous resistance at any time $t$ along the recovery curve:
-$$R_{out}(t) = \frac{t \cdot P_0}{\text{PVI} \cdot \log_{10}\left[ \frac{P(t)(P_p - P_0)}{P_p(P(t) - P_0)} \right]} \quad [\text{mmHg}/(\text{mL}/\text{min})]$$
-
-- **Normal:** $< 10 \text{ mmHg}/(\text{mL}/\text{min})$
-- **Borderline:** $10 - 12 \text{ mmHg}/(\text{mL}/\text{min})$
-- **Pathological:** $> 12 \text{ mmHg}/(\text{mL}/\text{min})$ (strongly predictive of favorable response to shunt diversion in normal pressure hydrocephalus)
-
----
-
-### 4. Decay Half-Time ($t_{1/2}$)
-The time required for induced pressure elevation $(P_p - P_0)$ to fall by 50% ($P_{1/2} = P_0 + \frac{P_p - P_0}{2}$):
-
-$$t_{1/2} = \frac{R_{out} \cdot \text{PVI} \cdot \log_{10}(2)}{P_0} \approx \frac{0.30103 \cdot R_{out} \cdot \text{PVI}}{P_0} \quad [\text{min}]$$
-
----
-
-### 5. Three Linked Scientific Graphs
+## 📈 Four Linked Scientific Visualizations
 
 1. **Graph 1: Pressure Decay Curve $P(t)$ vs Time**
-   - Empirical discrete data points $(t, P)$.
-   - Continuous non-linear Marmarou kinetic decay curve:
-     $$P(t) = \frac{P_0}{1 - \left(1 - \frac{P_0}{P_p}\right) e^{-t / \tau}} \quad \text{where } \tau = \frac{R_{out} \cdot \text{PVI}}{2.3026 \cdot P_0}$$
-   - Peak Pressure marker ($P_p$ at $t=0$).
-   - Half-decay marker ($t_{1/2}, P_{1/2}$).
+   - Discrete empirical data points $(t_i, P_i)$.
+   - Mono-exponential decay curve $P(t) = P_b + (P_{peak} - P_b)e^{-t/\tau}$.
+   - Vertical dashed reference line and badge marking $\tau$ ($t = \tau$, pressure decayed to $P_b + \frac{\Delta P}{e}$).
    - **ICP Safety Threshold Line** (customizable red dashed horizontal reference line with alert badge, default 30 mmHg).
-
-2. **Graph 2: Rate of Pressure Change (First Derivative $\frac{dP}{dt}$)**
-   - Instantaneous velocity of pressure decay (mmHg/min).
-   - Maximum absorption velocity peak marker.
-   - Deceleration asymptote toward 0 mmHg/min as baseline equilibrium is restored.
-
-3. **Graph 3: Curvature & Deceleration (Second Derivative $\frac{d^2P}{dt^2}$)**
-   - Curvature dynamics (mmHg/min²) illustrating the transition from rapid early compliance damping to slow late outflow resistance absorption.
+2. **Graph 2: Rate of Pressure Decay (First Derivative $\frac{dP}{dt}$)**
+   - $\frac{dP}{dt} = -\frac{P_{peak} - P_b}{\tau} e^{-t/\tau}$ showing instantaneous recovery velocity.
+3. **Graph 3: Curvature & Decay Deceleration (Second Derivative $\frac{d^2P}{dt^2}$)**
+   - $\frac{d^2P}{dt^2} = \frac{P_{peak} - P_b}{\tau^2} e^{-t/\tau}$ tracking stabilization toward steady state.
+4. **Graph 4: Semi-Logarithmic Linearization Plot ($\ln[P(t) - P_b]$ vs $t$)**
+   - Scatter points of measured $\ln[P(t) - P_b]$.
+   - Linear regression line demonstrating goodness-of-fit ($R^2$) where linear slope equals $-1/\tau$.
 
 ---
 
 ## ⚡ Key Features
-- **Editable Clinical Recording Table**: Add, edit, or delete reading pairs $(t, P)$ with live auto-sorting.
-- **Customizable ICP Safety Threshold**: Dynamic red dashed line (default 30 mmHg) with automated alert status if exceeded.
+- **Primary Hero Cards**: Highlights **1) PVI**, **2) $R_{out}$**, and **3) Time Constant $\tau$** with formulas, values, and clinical classifications.
+- **Editable Clinical Recording Table**: Add, edit, and delete reading pairs $(t, P)$ with live real-time auto-calculation of $\Delta P$ and $\ln[P - P_b]$.
+- **ICP Safety Threshold**: User-customizable threshold with dynamic red dashed warning line and alert banner.
 - **Clinical Presets**:
-  - *Normal Adult Compliance*
-  - *NPH / High $R_{out}$*
-  - *Low PVI / Stiff Brain*
-  - *CSF Withdrawal / Tap Bolus*
-- **Biomechanical & Hydrodynamic Dashboard**: Live computation of PVI, $R_{out}$, $C_0$, $E_0$, $t_{1/2}$, and safety status.
-- **Clinical Documentation & EHR Export**:
-  - Copy formatted clinical note to clipboard (compatible with Epic, Cerner, EMIS, SystmOne).
-  - Print / PDF export.
-  - Email clinical report.
-  - CSV file download.
-- **Dark and Light Theme Support** with ultra-clean modern glassmorphism design.
-- **Offline Reliability**: Bundled local `chart.umd.min.js` with CDN fallback.
+  - *1. Normal Adult (10 mL bolus, $R_{out} \approx 7.2$)*
+  - *2. NPH / High $R_{out}$ (10 mL bolus, $R_{out} \approx 16.0$)*
+  - *3. Stiff Brain / Low PVI (5 mL bolus, $P_{peak} = 40$ mmHg)*
+  - *4. Standard 5 mL Bolus*
+- **Clinical Documentation Generator**: One-click EHR report copy (Epic/Cerner format), Print/PDF view, Email summary, and CSV data export.
+- **Dark and Light Mode Support**.
+- **Offline Reliability**: Bundled local `chart.umd.min.js`.
 
 ---
 

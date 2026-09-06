@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSF Bolus Calculator - PVI, Rout & Compliance Analysis</title>
+    <title>CSF Bolus Study Calculator - PVI, Rout & Time Constant (τ)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,7 +19,7 @@
             --bg-primary: #0b1120;
             --bg-secondary: #131d31;
             --bg-tertiary: #1e293b;
-            --card-bg: rgba(19, 29, 49, 0.78);
+            --card-bg: rgba(19, 29, 49, 0.80);
             --card-border: rgba(255, 255, 255, 0.09);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
@@ -41,7 +41,7 @@
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
             --bg-tertiary: #f1f5f9;
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: rgba(255, 255, 255, 0.96);
             --card-border: rgba(0, 0, 0, 0.08);
             --text-primary: #0f172a;
             --text-secondary: #475569;
@@ -67,7 +67,7 @@
         }
 
         .container {
-            max-width: 1440px;
+            max-width: 1480px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -206,10 +206,10 @@
             border: 1px solid var(--accent-cyan);
         }
 
-        /* Form Layouts */
+        /* Form Grid */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 14px;
         }
 
@@ -249,8 +249,95 @@
             cursor: pointer;
         }
 
-        /* Metrics Summary Dashboard */
-        .metrics-grid {
+        /* Primary Three Target Metrics Hero Cards */
+        .primary-metrics-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .hero-metric-card {
+            background: linear-gradient(145deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1.5px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .hero-metric-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-metric-card.card-pvi {
+            border-top: 4px solid var(--accent-cyan);
+        }
+        .hero-metric-card.card-rout {
+            border-top: 4px solid var(--accent-emerald);
+        }
+        .hero-metric-card.card-tau {
+            border-top: 4px solid var(--accent-amber);
+        }
+
+        .hero-metric-number {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 28px;
+            font-weight: 800;
+            opacity: 0.15;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero-metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hero-metric-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hero-metric-value {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+            margin: 4px 0;
+        }
+
+        .hero-metric-formula {
+            font-size: 11.5px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-cyan);
+            background: rgba(0, 0, 0, 0.25);
+            padding: 4px 8px;
+            border-radius: 6px;
+            width: fit-content;
+        }
+
+        .hero-metric-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        /* Secondary Metrics Dashboard */
+        .secondary-metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
             gap: 14px;
@@ -300,7 +387,7 @@
         }
 
         .metric-value {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             color: var(--text-primary);
             font-family: 'JetBrains Mono', monospace;
@@ -338,14 +425,14 @@
             border: 1px solid var(--accent-rose);
         }
 
-        /* Two Column Layout for Table & Controls */
+        /* Workspace Grid */
         .workspace-grid {
             display: grid;
-            grid-template-columns: 420px 1fr;
+            grid-template-columns: 440px 1fr;
             gap: 20px;
         }
 
-        @media (max-width: 1080px) {
+        @media (max-width: 1120px) {
             .workspace-grid {
                 grid-template-columns: 1fr;
             }
@@ -353,7 +440,7 @@
 
         /* Table Styles */
         .table-responsive {
-            max-height: 380px;
+            max-height: 400px;
             overflow-y: auto;
             border: 1px solid var(--card-border);
             border-radius: var(--radius-md);
@@ -395,7 +482,7 @@
         }
 
         .table-input {
-            width: 70px;
+            width: 68px;
             background: var(--bg-primary);
             border: 1px solid var(--card-border);
             border-radius: 6px;
@@ -488,7 +575,7 @@
             border: 1px solid var(--card-border);
             color: var(--text-secondary);
             border-radius: 6px;
-            padding: 4px 10px;
+            padding: 5px 11px;
             font-size: 11.5px;
             font-weight: 600;
             cursor: pointer;
@@ -501,7 +588,7 @@
             background: rgba(6, 182, 212, 0.15);
         }
 
-        /* Charts Container */
+        /* Charts Column */
         .charts-column {
             display: flex;
             flex-direction: column;
@@ -555,13 +642,17 @@
             height: 270px;
         }
 
-        /* Interpretation and Clinical Details */
+        .chart-canvas-wrap.small {
+            height: 220px;
+        }
+
+        /* Clinical Reference Box */
         .clinical-reference-box {
             background: var(--bg-secondary);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
             padding: 16px 20px;
-            font-size: 12.5px;
+            font-size: 12px;
             line-height: 1.6;
             color: var(--text-secondary);
         }
@@ -599,7 +690,7 @@
             font-size: 11.5px;
             color: var(--text-muted);
             line-height: 1.6;
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
         }
 
@@ -623,9 +714,9 @@
             background: var(--bg-secondary);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-xl);
-            max-width: 700px;
+            max-width: 760px;
             width: 100%;
-            max-height: 85vh;
+            max-height: 88vh;
             overflow-y: auto;
             padding: 28px;
             display: flex;
@@ -667,10 +758,10 @@
                 color: #000000 !important;
                 padding: 10px !important;
             }
-            .app-header, .btn-icon, .btn-primary, .btn-secondary, .presets-bar, .table-toolbar, .btn-table-action {
+            .app-header, .btn-icon, .btn-primary, .btn-secondary, .presets-bar, .btn-table-action {
                 display: none !important;
             }
-            .section-card, .chart-box, .metric-card {
+            .section-card, .chart-box, .metric-card, .hero-metric-card {
                 border: 1px solid #cccccc !important;
                 background: #ffffff !important;
                 box-shadow: none !important;
@@ -690,10 +781,10 @@
                     <span>💉</span> CSF Bolus Study Calculator
                 </h1>
                 <div class="subtitle">
-                    Marmarou Bolus Model: Pressure-Volume Index (PVI), Outflow Resistance (R<sub>out</sub>), Compliance & Elastance
+                    Marmarou Mono-Exponential Model: Pressure-Volume Index (PVI), Outflow Resistance (R<sub>out</sub>) & Time Constant of Pressure Decay (&tau;)
                 </div>
                 <div class="copyright">
-                    Developed by <strong>Dr G Narenthiran</strong> FRCS(SN), Neurosurgery Research Listserv, UK &bull; 
+                    Developed by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN), Neurosurgery Research Listserv, UK &bull; 
                     <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
                 </div>
             </div>
@@ -724,17 +815,17 @@
             </div>
         </div>
 
-        <!-- Patient & Study Setup Bar -->
+        <!-- Protocol & Parameters Bar -->
         <section class="section-card">
             <div class="section-header">
                 <div class="section-title">
-                    <span>👤</span> Study Metadata & Test Protocol
+                    <span>⚙️</span> Bolus Infusion Parameters & Patient Setup
                 </div>
-                <span class="badge-pill">Marmarou Transient Kinetic Analysis</span>
+                <span class="badge-pill">Marmarou Exponential Decay Protocol</span>
             </div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Patient ID / NHS No.</label>
+                    <label>Patient ID / Ref</label>
                     <input type="text" id="patientId" class="form-control" placeholder="e.g. PT-94021" value="PT-CSF-801">
                 </div>
                 <div class="form-group">
@@ -751,23 +842,16 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Bolus Direction</label>
-                    <select id="bolusType" class="form-control" onchange="handleBolusTypeChange()">
-                        <option value="injection" selected>Rapid Saline Injection (+ΔV)</option>
-                        <option value="withdrawal">Rapid CSF Withdrawal (-ΔV)</option>
-                    </select>
+                    <label>Bolus Volume V<sub>inf</sub> (&Delta;V in mL)</label>
+                    <input type="number" id="bolusVolume" class="form-control" step="0.5" value="10.0" oninput="updateAll()">
                 </div>
                 <div class="form-group">
-                    <label>Bolus Volume ΔV (mL)</label>
-                    <input type="number" id="bolusVolume" class="form-control" step="0.5" value="4.0" oninput="updateAll()">
-                </div>
-                <div class="form-group">
-                    <label>Baseline ICP P₀ (mmHg)</label>
+                    <label>Baseline ICP P<sub>b</sub> (mmHg)</label>
                     <input type="number" id="baselineIcp" class="form-control" step="0.5" value="10.0" oninput="updateAll()">
                 </div>
                 <div class="form-group">
-                    <label>Peak ICP Pₚ (mmHg)</label>
-                    <input type="number" id="peakIcp" class="form-control" step="0.5" value="30.0" oninput="updateAll()">
+                    <label>Peak ICP P<sub>peak</sub> (mmHg)</label>
+                    <input type="number" id="peakIcp" class="form-control" step="0.5" value="26.0" oninput="updateAll()">
                 </div>
                 <div class="form-group">
                     <label style="color: var(--accent-rose); font-weight: 700;">Safety Threshold (mmHg)</label>
@@ -779,57 +863,99 @@
         <!-- Presets Quick Selection -->
         <div class="presets-bar">
             <span class="presets-label">⚡ Clinical Presets:</span>
-            <button class="preset-btn" onclick="loadPreset('normal')">Normal Adult Compliance (PVI ~11 mL, Rout ~6.8)</button>
-            <button class="preset-btn" onclick="loadPreset('nph')">NPH / High Rout (PVI ~9.4 mL, Rout ~15.8)</button>
-            <button class="preset-btn" onclick="loadPreset('stiff')">Low PVI / Stiff Brain (PVI ~6.3 mL, Peak 42)</button>
-            <button class="preset-btn" onclick="loadPreset('tap')">CSF Withdrawal / Tap Bolus (-5 mL)</button>
+            <button class="preset-btn" onclick="loadPreset('normal')">1. Normal Adult (Vinf: 10 mL, Pb: 10, Ppeak: 26, Rout ~7.2)</button>
+            <button class="preset-btn" onclick="loadPreset('nph')">2. NPH / High Rout (Vinf: 10 mL, Pb: 12, Ppeak: 32, Rout ~16.0)</button>
+            <button class="preset-btn" onclick="loadPreset('stiff')">3. Stiff Brain / Low PVI (Vinf: 5 mL, Pb: 14, Ppeak: 40, Rout ~18.2)</button>
+            <button class="preset-btn" onclick="loadPreset('bolus5')">4. Standard 5 mL Bolus (Vinf: 5 mL, Pb: 10, Ppeak: 22)</button>
         </div>
 
-        <!-- Hydrodynamic Metrics Dashboard -->
-        <div class="metrics-grid">
-            <div class="metric-card" id="cardPvi">
-                <div class="metric-label">
-                    <span>Pressure-Volume Index (PVI)</span>
+        <!-- HERO THREE TARGET PARAMETERS -->
+        <div class="primary-metrics-banner">
+            <!-- 1. PVI -->
+            <div class="hero-metric-card card-pvi">
+                <span class="hero-metric-number">1</span>
+                <div class="hero-metric-header">
+                    <div class="hero-metric-label">
+                        <span>🎯</span> 1) Pressure-Volume Index (PVI)
+                    </div>
                     <span id="badgePvi" class="metric-badge badge-normal">Normal</span>
                 </div>
-                <div class="metric-value" id="valPvi">-- mL</div>
-                <div class="metric-subtext">Volume needed to raise ICP 10-fold. Normal adult: 18 - 30 mL (elderly/NPH: > 13 mL).</div>
+                <div class="hero-metric-value" id="valPvi">-- mL</div>
+                <div class="hero-metric-formula">PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)</div>
+                <div class="hero-metric-desc">
+                    Volume required to raise ICP 10-fold. Characterizes intracranial mechanical compliance slope. Normal: &gt; 18 mL (adult) or &gt; 13 mL (elderly).
+                </div>
             </div>
 
-            <div class="metric-card" id="cardRout">
-                <div class="metric-label">
-                    <span>CSF Outflow Resistance (R<sub>out</sub>)</span>
+            <!-- 2. Rout -->
+            <div class="hero-metric-card card-rout">
+                <span class="hero-metric-number">2</span>
+                <div class="hero-metric-header">
+                    <div class="hero-metric-label">
+                        <span>🎯</span> 2) Outflow Resistance (R<sub>out</sub>)
+                    </div>
                     <span id="badgeRout" class="metric-badge badge-normal">Normal</span>
                 </div>
-                <div class="metric-value" id="valRout">-- <span style="font-size: 14px;">mmHg/(mL/min)</span></div>
-                <div class="metric-subtext">Resistance to CSF resorption. Normal &lt; 10, Borderline 10 - 12, Pathological &gt; 12.</div>
+                <div class="hero-metric-value" id="valRout">-- <span style="font-size: 16px;">mmHg&middot;min/mL</span></div>
+                <div class="hero-metric-formula">R<sub>out</sub> = &int;[P(t)-P<sub>b</sub>]dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C</div>
+                <div class="hero-metric-desc">
+                    Calculated via cumulative pressure-time integral divided by bolus volume. Normal: &lt; 10 &ndash; 12. Pathological: &gt; 12 &ndash; 18 mmHg&middot;min/mL.
+                </div>
             </div>
 
+            <!-- 3. Time Constant Tau -->
+            <div class="hero-metric-card card-tau">
+                <span class="hero-metric-number">3</span>
+                <div class="hero-metric-header">
+                    <div class="hero-metric-label">
+                        <span>🎯</span> 3) Time Constant of Decay (&tau;)
+                    </div>
+                    <span class="metric-badge badge-normal">Decay Rate</span>
+                </div>
+                <div class="hero-metric-value" id="valTau">-- <span style="font-size: 16px;">min</span></div>
+                <div class="hero-metric-formula">&tau; = R<sub>out</sub> &times; C = AUC / (P<sub>peak</sub> - P<sub>b</sub>)</div>
+                <div class="hero-metric-desc">
+                    Rate of mono-exponential pressure decay. Slope of ln[P(t) - P<sub>b</sub>] vs time equals -1/&tau;. Prolonged &tau; signifies delayed CSF resorption.
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Biomechanical Cards -->
+        <div class="secondary-metrics-grid">
             <div class="metric-card">
                 <div class="metric-label">
-                    <span>Baseline Compliance (C₀)</span>
-                    <span class="metric-badge badge-normal">Biomechanical</span>
+                    <span>Intracranial Compliance (C)</span>
+                    <span class="metric-badge badge-normal">Buffering</span>
                 </div>
                 <div class="metric-value" id="valCompliance">-- <span style="font-size: 14px;">mL/mmHg</span></div>
-                <div class="metric-subtext">Instantaneous cranial reserve C₀ = PVI / (2.3026 &times; P₀).</div>
+                <div class="metric-subtext">C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>). Immediate volumetric reserve.</div>
             </div>
 
             <div class="metric-card">
                 <div class="metric-label">
-                    <span>Baseline Elastance (E₀)</span>
-                    <span class="metric-badge badge-normal">1 / Compliance</span>
+                    <span>Area Under Curve (AUC)</span>
+                    <span class="metric-badge badge-normal">Integral</span>
                 </div>
-                <div class="metric-value" id="valElastance">-- <span style="font-size: 14px;">mmHg/mL</span></div>
-                <div class="metric-subtext">Slope of pressure-volume response E₀ = 1 / C₀.</div>
+                <div class="metric-value" id="valAuc">-- <span style="font-size: 14px;">mmHg&middot;min</span></div>
+                <div class="metric-subtext">Cumulative excess pressure &int;[P(t) - P<sub>b</sub>] dt.</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <span>Exponential Fit (R²)</span>
+                    <span class="metric-badge badge-normal" id="badgeR2">Mono-Exp</span>
+                </div>
+                <div class="metric-value" id="valR2">--</div>
+                <div class="metric-subtext">Linear regression goodness-of-fit for ln[P(t) - P<sub>b</sub>] vs t.</div>
             </div>
 
             <div class="metric-card">
                 <div class="metric-label">
                     <span>Decay Half-Time (t<sub>½</sub>)</span>
-                    <span class="metric-badge badge-normal">Equilibrium</span>
+                    <span class="metric-badge badge-normal">50% Fall</span>
                 </div>
                 <div class="metric-value" id="valHalfTime">-- <span style="font-size: 14px;">min</span></div>
-                <div class="metric-subtext" id="subHalfPressure">Time to reach 50% recovery (P<sub>½</sub>: -- mmHg).</div>
+                <div class="metric-subtext" id="subHalfPressure">t<sub>½</sub> = &tau; &times; ln(2) = 0.693 &times; &tau;.</div>
             </div>
 
             <div class="metric-card" id="cardSafetyStatus">
@@ -842,19 +968,19 @@
             </div>
         </div>
 
-        <!-- Main Workspace: Data Table + 3 Linked Graphs -->
+        <!-- Main Workspace: Data Table + Linked Graphs -->
         <div class="workspace-grid">
-            <!-- Left: Decay Readings Table -->
+            <!-- Left: Table & Log Regression Info -->
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title">
-                        <span>📊</span> Pressure Decay Series
+                        <span>📊</span> Pressure Decay Time Series
                     </div>
                     <span class="badge-pill" id="rowCountBadge">10 Readings</span>
                 </div>
 
                 <div style="font-size: 12px; color: var(--text-secondary);">
-                    Record time (minutes post-bolus) and observed ICP as the pressure decays toward baseline P₀.
+                    Record time t (minutes post-bolus) and observed ICP as pressure decays back to baseline P<sub>b</sub>.
                 </div>
 
                 <div class="table-responsive">
@@ -863,8 +989,8 @@
                             <tr>
                                 <th>Time (min)</th>
                                 <th>ICP (mmHg)</th>
-                                <th>&Delta;P</th>
-                                <th>R<sub>out</sub>(t)</th>
+                                <th>P(t) - P<sub>b</sub></th>
+                                <th>ln[P - P<sub>b</sub>]</th>
                                 <th style="text-align: center;">Act</th>
                             </tr>
                         </thead>
@@ -894,17 +1020,20 @@
                 <!-- Mathematical Summary Card -->
                 <div class="clinical-reference-box">
                     <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
-                        📌 Marmarou Bolus Formulation:
+                        📌 Marmarou Bolus Mathematical Formulation:
                     </div>
-                    <div>&bull; <strong>PVI:</strong> &Delta;V / log₁₀(Pₚ / P₀)</div>
-                    <div>&bull; <strong>R<sub>out</sub>(t):</strong> [t &times; P₀] / [PVI &times; log₁₀( (P<sub>t</sub>(Pₚ - P₀)) / (Pₚ(P<sub>t</sub> - P₀)) )]</div>
-                    <div>&bull; <strong>t<sub>½</sub>:</strong> [R<sub>out</sub> &times; PVI &times; log₁₀(2)] / P₀</div>
+                    <div>&bull; <strong>Intracranial Compliance (C):</strong> &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>)</div>
+                    <div>&bull; <strong>PVI:</strong> &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)</div>
+                    <div>&bull; <strong>AUC:</strong> &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt = (P<sub>peak</sub> - P<sub>b</sub>) &times; &tau;</div>
+                    <div>&bull; <strong>Time Constant (&tau;):</strong> Slope of ln[P(t) - P<sub>b</sub>] vs t = -1/&tau;</div>
+                    <div>&bull; <strong>R<sub>out</sub>:</strong> AUC / V<sub>inf</sub> = &tau; / C</div>
+                    <div>&bull; <strong>Mono-Exponential Model:</strong> P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>) &middot; e<sup>-t / &tau;</sup></div>
                 </div>
             </div>
 
-            <!-- Right: Three Linked Scientific Graphs -->
+            <!-- Right: Scientific Graphs -->
             <div class="charts-column">
-                <!-- Graph 1: ICP vs Time (with safety line & markers) -->
+                <!-- Graph 1: P(t) vs Time with Tau marker & safety threshold -->
                 <div class="chart-box">
                     <div class="chart-header">
                         <div class="chart-title-wrap">
@@ -912,11 +1041,14 @@
                                 <span style="color: var(--accent-cyan);">📈</span> Graph 1: Pressure Decay Curve P(t) vs Time
                             </h3>
                             <div class="chart-subtitle">
-                                Empirical decay readings, continuous non-linear kinetic fit, peak marker, half-time marker, and safety threshold.
+                                Mono-exponential model P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>)e<sup>-t/&tau;</sup> with &tau; marker and safety threshold.
                             </div>
                         </div>
                         <div class="chart-badges">
-                            <span class="badge-pill" id="graph1PeakBadge">Peak: 30.0 mmHg</span>
+                            <span class="badge-pill" id="graph1PeakBadge">Peak: 26.0 mmHg</span>
+                            <span class="badge-pill" style="border-color: var(--accent-amber); color: var(--accent-amber); background: rgba(245, 158, 11, 0.1);" id="graph1TauBadge">
+                                &tau; = -- min
+                            </span>
                             <span class="badge-pill" style="border-color: var(--accent-rose); color: var(--accent-rose); background: rgba(244, 63, 94, 0.1);" id="graph1SafetyBadge">
                                 Safety: 30 mmHg
                             </span>
@@ -927,27 +1059,27 @@
                     </div>
                 </div>
 
-                <!-- Graph 2: 1st Derivative (Rate of Pressure Decay dP/dt) -->
+                <!-- Graph 2: 1st Derivative (dP/dt) -->
                 <div class="chart-box">
                     <div class="chart-header">
                         <div class="chart-title-wrap">
                             <h3>
-                                <span style="color: var(--accent-amber);">📉</span> Graph 2: Rate of Pressure Change (dP/dt)
+                                <span style="color: var(--accent-amber);">📉</span> Graph 2: Rate of Pressure Decay (dP/dt)
                             </h3>
                             <div class="chart-subtitle">
-                                First derivative: instantaneous velocity of pressure recovery (mmHg/min) towards baseline equilibrium.
+                                First derivative: dP/dt = -[(P<sub>peak</sub> - P<sub>b</sub>) / &tau;] &middot; e<sup>-t/&tau;</sup> (instantaneous recovery velocity).
                             </div>
                         </div>
                         <div class="chart-badges">
-                            <span class="badge-pill" id="graph2MaxRateBadge">Max Decay: -- mmHg/min</span>
+                            <span class="badge-pill" id="graph2MaxRateBadge">Initial Rate: -- mmHg/min</span>
                         </div>
                     </div>
-                    <div class="chart-canvas-wrap">
+                    <div class="chart-canvas-wrap small">
                         <canvas id="chart2"></canvas>
                     </div>
                 </div>
 
-                <!-- Graph 3: 2nd Derivative (Deceleration & Curvature d2P/dt2) -->
+                <!-- Graph 3: 2nd Derivative (d2P/dt2) -->
                 <div class="chart-box">
                     <div class="chart-header">
                         <div class="chart-title-wrap">
@@ -955,15 +1087,35 @@
                                 <span style="color: var(--accent-purple);">🔄</span> Graph 3: Curvature & Decay Deceleration (d²P/dt²)
                             </h3>
                             <div class="chart-subtitle">
-                                Second derivative: relaxation acceleration dynamics (mmHg/min²) stabilizing as t &rarr; &infin;.
+                                Second derivative: d²P/dt² = [(P<sub>peak</sub> - P<sub>b</sub>) / &tau;²] &middot; e<sup>-t/&tau;</sup> (decay stabilization).
                             </div>
                         </div>
                         <div class="chart-badges">
                             <span class="badge-pill" id="graph3CurvBadge">Curvature: Stabilizing</span>
                         </div>
                     </div>
-                    <div class="chart-canvas-wrap">
+                    <div class="chart-canvas-wrap small">
                         <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+
+                <!-- Graph 4: Logarithmic Linearization Plot (ln[P - Pb] vs t) -->
+                <div class="chart-box">
+                    <div class="chart-header">
+                        <div class="chart-title-wrap">
+                            <h3>
+                                <span style="color: var(--accent-emerald);">📏</span> Graph 4: Logarithmic Linearization Plot (ln[P(t) - P<sub>b</sub>] vs Time)
+                            </h3>
+                            <div class="chart-subtitle">
+                                Semi-logarithmic plot demonstrating mono-exponential decay where linear slope = -1/&tau;.
+                            </div>
+                        </div>
+                        <div class="chart-badges">
+                            <span class="badge-pill" id="graph4SlopeBadge">Slope = -1/&tau;</span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrap small">
+                        <canvas id="chart4"></canvas>
                     </div>
                 </div>
             </div>
@@ -973,26 +1125,26 @@
         <section class="section-card">
             <div class="section-header">
                 <div class="section-title">
-                    <span>🩺</span> Diagnostic Thresholds & Clinical Interpretation Guide
+                    <span>🩺</span> Diagnostic Thresholds & Clinical Interpretation
                 </div>
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; font-size: 12.5px; color: var(--text-secondary);">
                 <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">Pressure-Volume Index (PVI)</div>
-                    <div>&bull; <strong>Normal Adult:</strong> 18 &ndash; 30 mL (mean ~25 mL)</div>
+                    <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">1. Pressure-Volume Index (PVI)</div>
+                    <div>&bull; <strong>Normal Adult:</strong> &gt; 18 mL (mean ~25 mL)</div>
                     <div>&bull; <strong>Borderline / Elderly:</strong> 13 &ndash; 18 mL</div>
-                    <div>&bull; <strong>Severely Reduced (&lt; 13 mL):</strong> Indicates severe cranial volume exhaustion or high elastance.</div>
+                    <div>&bull; <strong>Pathological (&lt; 13 mL):</strong> Indicates severe cranial volume exhaustion or stiff intracranial vault.</div>
                 </div>
                 <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <div style="font-weight: 700; color: var(--accent-emerald); margin-bottom: 6px;">Resistance to Outflow (R<sub>out</sub>)</div>
-                    <div>&bull; <strong>Normal:</strong> &lt; 10 mmHg/(mL/min)</div>
-                    <div>&bull; <strong>Borderline:</strong> 10 &ndash; 12 mmHg/(mL/min)</div>
-                    <div>&bull; <strong>Pathological (&gt; 12 mmHg/(mL/min)):</strong> High probability of clinical improvement following CSF diversion / shunt surgery in suspected iNPH.</div>
+                    <div style="font-weight: 700; color: var(--accent-emerald); margin-bottom: 6px;">2. CSF Outflow Resistance (R<sub>out</sub>)</div>
+                    <div>&bull; <strong>Normal:</strong> &lt; 10 &ndash; 12 mmHg&middot;min/mL</div>
+                    <div>&bull; <strong>Borderline:</strong> 10 &ndash; 12 mmHg&middot;min/mL</div>
+                    <div>&bull; <strong>Pathological (&gt; 12 &ndash; 18 mmHg&middot;min/mL):</strong> Impaired CSF absorption capacity; supports diagnosis of communicating hydrocephalus or NPH.</div>
                 </div>
                 <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <div style="font-weight: 700; color: var(--accent-rose); margin-bottom: 6px;">ICP Safety Protocol</div>
-                    <div>&bull; <strong>Default Safety Limit:</strong> 30 mmHg (represented by the red dashed line).</div>
-                    <div>&bull; If induced peak pressure exceeds the safety limit, the calculator flags a high-priority alert. Bolus injection should be immediately halted if clinical threshold is reached.</div>
+                    <div style="font-weight: 700; color: var(--accent-amber); margin-bottom: 6px;">3. Time Constant of Decay (&tau;)</div>
+                    <div>&bull; <strong>Definition:</strong> Product of outflow resistance and intracranial compliance (&tau; = R<sub>out</sub> &times; C).</div>
+                    <div>&bull; <strong>Significance:</strong> Prolonged &tau; signifies sluggish CSF resorption kinetics.</div>
                 </div>
             </div>
         </section>
@@ -1026,45 +1178,36 @@
             </div>
             <div style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); display: flex; flex-direction: column; gap: 14px;">
                 <p>
-                    The <strong>Marmarou Bolus Injection/Withdrawal Method</strong> determines intracranial mechanical compliance and CSF absorption resistance through a rapid volume pertubation (&plusmn;&Delta;V) introduced over a few seconds into the lumbar or ventricular CSF space.
+                    In a bolus injection test, a discrete volume (V<sub>inf</sub>) is introduced instantaneously rather than continuously. Because a bolus creates a transient pressure spike followed by an exponential decay rather than a steady-state plateau, Anthony Marmarou’s mathematical model analyzes the entire pressure-time recovery curve.
                 </p>
 
                 <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <strong style="color: var(--accent-cyan);">1. Pressure-Volume Index (PVI)</strong>
+                    <strong style="color: var(--accent-cyan);">1. Intracranial Compliance (C) & PVI</strong>
                     <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
-                        PVI = &Delta;V / log₁₀(Pₚ / P₀)  [mL]
-                    </div>
-                    <div style="font-size: 11.5px; margin-top: 4px;">
-                        PVI represents the theoretical volume increment required to raise intracranial pressure by one order of magnitude (10-fold).
+                        C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>)  [mL/mmHg]<br>
+                        PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)  [mL]
                     </div>
                 </div>
 
                 <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <strong style="color: var(--accent-emerald);">2. Cranial Elastance & Compliance at Baseline</strong>
+                    <strong style="color: var(--accent-emerald);">2. Outflow Resistance (R<sub>out</sub>)</strong>
                     <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
-                        E₀ = (ln(10) &times; P₀) / PVI = (2.3026 &times; P₀) / PVI  [mmHg/mL]<br>
-                        C₀ = 1 / E₀ = PVI / (2.3026 &times; P₀)  [mL/mmHg]
+                        R<sub>out</sub> = &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C
+                    </div>
+                    <div style="font-size: 11.5px; margin-top: 4px;">
+                        Dividing the cumulative excess pressure-time integral by the injected volume yields the true outflow resistance (mmHg&middot;min/mL).
                     </div>
                 </div>
 
                 <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <strong style="color: var(--accent-amber);">3. CSF Outflow Resistance (R<sub>out</sub>)</strong>
+                    <strong style="color: var(--accent-amber);">3. Time Constant of Pressure Decay (&tau;)</strong>
                     <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
-                        R<sub>out</sub> = [t &times; P₀] / [PVI &times; log₁₀( (P<sub>t</sub>(Pₚ - P₀)) / (Pₚ(P<sub>t</sub> - P₀)) )]
+                        P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>) &middot; e<sup>-t / &tau;</sup><br>
+                        AUC = (P<sub>peak</sub> - P<sub>b</sub>) &times; &tau;<br>
+                        ln[P(t) - P<sub>b</sub>] = ln(P<sub>peak</sub> - P<sub>b</sub>) - (1 / &tau;) &times; t
                     </div>
                     <div style="font-size: 11.5px; margin-top: 4px;">
-                        Where t is elapsed time post-bolus, and P<sub>t</sub> is the ICP measured at time t during pressure decay.
-                    </div>
-                </div>
-
-                <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <strong style="color: var(--accent-purple);">4. Pressure Decay Curve P(t) & Derivatives</strong>
-                    <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
-                        P(t) = P₀ / [ 1 - (1 - P₀/Pₚ) &times; exp(-t / &tau;) ]<br>
-                        where &tau; = (R<sub>out</sub> &times; PVI) / (2.3026 &times; P₀)
-                    </div>
-                    <div style="font-size: 11.5px; margin-top: 4px;">
-                        The first derivative dP/dt reflects the instant rate of CSF absorption, decelerating to 0 as pressure restores baseline P₀.
+                        Linear regression of ln[P(t) - P<sub>b</sub>] vs t yields a straight line with slope = -1/&tau;.
                     </div>
                 </div>
 
@@ -1079,28 +1222,31 @@
     <script>
         // --- State Management ---
         let readings = [
-            { time: 0.0, icp: 30.0 },
-            { time: 0.5, icp: 25.5 },
-            { time: 1.0, icp: 22.0 },
-            { time: 1.5, icp: 19.2 },
-            { time: 2.0, icp: 17.0 },
-            { time: 2.5, icp: 15.3 },
-            { time: 3.0, icp: 14.0 },
-            { time: 4.0, icp: 12.2 },
-            { time: 5.0, icp: 11.2 },
-            { time: 6.0, icp: 10.6 }
+            { time: 0.0, icp: 26.0 },
+            { time: 0.5, icp: 24.3 },
+            { time: 1.0, icp: 22.8 },
+            { time: 1.5, icp: 21.4 },
+            { time: 2.0, icp: 20.2 },
+            { time: 2.5, icp: 19.1 },
+            { time: 3.0, icp: 18.1 },
+            { time: 4.0, icp: 16.5 },
+            { time: 5.0, icp: 15.2 },
+            { time: 6.0, icp: 14.1 },
+            { time: 8.0, icp: 12.6 },
+            { time: 10.0, icp: 11.7 }
         ];
 
         let chart1Instance = null;
         let chart2Instance = null;
         let chart3Instance = null;
+        let chart4Instance = null;
 
         // Custom plugin for vertical lines and badges on Chart.js
         const chartMarkerPlugin = {
             id: 'chartMarkerPlugin',
             afterDraw: (chart) => {
                 const marker = chart.config.options?.plugins?.chartMarker;
-                if (!marker || !marker.xValue) return;
+                if (!marker || marker.xValue === undefined || isNaN(marker.xValue)) return;
 
                 const ctx = chart.ctx;
                 const xAxis = chart.scales.x;
@@ -1112,16 +1258,13 @@
                 ctx.save();
                 ctx.beginPath();
                 ctx.setLineDash([5, 4]);
-                ctx.strokeStyle = marker.color || '#06b6d4';
+                ctx.strokeStyle = marker.color || '#f59e0b';
                 ctx.lineWidth = 1.8;
                 ctx.moveTo(xPos, yAxis.top);
                 ctx.lineTo(xPos, yAxis.bottom);
                 ctx.stroke();
-                ctx.restore();
 
-                // Draw label badge at top
                 if (marker.label) {
-                    ctx.save();
                     ctx.font = 'bold 10px Inter, sans-serif';
                     const textWidth = ctx.measureText(marker.label).width;
                     const badgeWidth = textWidth + 12;
@@ -1129,7 +1272,7 @@
                     const badgeX = Math.min(Math.max(xPos - badgeWidth / 2, xAxis.left), xAxis.right - badgeWidth);
                     const badgeY = yAxis.top + 4;
 
-                    ctx.fillStyle = marker.badgeBg || 'rgba(6, 182, 212, 0.85)';
+                    ctx.fillStyle = marker.badgeBg || 'rgba(245, 158, 11, 0.9)';
                     ctx.beginPath();
                     ctx.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 4);
                     ctx.fill();
@@ -1138,8 +1281,8 @@
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText(marker.label, badgeX + badgeWidth / 2, badgeY + badgeHeight / 2);
-                    ctx.restore();
                 }
+                ctx.restore();
             }
         };
 
@@ -1165,8 +1308,7 @@
                 ctx.lineTo(xAxis.right, yPos);
                 ctx.stroke();
 
-                // Draw threshold badge on right
-                const label = `⚠️ Threshold: ${safetyVal.toFixed(1)} mmHg`;
+                const label = `⚠️ Safety Threshold: ${safetyVal.toFixed(1)} mmHg`;
                 ctx.font = 'bold 10px Inter, sans-serif';
                 const textWidth = ctx.measureText(label).width;
                 const badgeWidth = textWidth + 10;
@@ -1209,7 +1351,7 @@
                 ctx.lineTo(xAxis.right, yPos);
                 ctx.stroke();
 
-                const label = `P₀: ${baseVal.toFixed(1)} mmHg`;
+                const label = `Baseline P_b: ${baseVal.toFixed(1)} mmHg`;
                 ctx.font = '10px Inter, sans-serif';
                 ctx.fillStyle = 'rgba(148, 163, 184, 0.9)';
                 ctx.fillText(label, xAxis.left + 6, yPos - 4);
@@ -1235,15 +1377,12 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
 
-            const p0 = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
-            const pp = parseFloat(document.getElementById('peakIcp').value) || 30.0;
-            const deltaV = parseFloat(document.getElementById('bolusVolume').value) || 4.0;
-            const pvi = calculatePVI(deltaV, p0, pp);
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
 
             readings.forEach((row, idx) => {
                 const tr = document.createElement('tr');
-                const deltaP = (row.icp - p0).toFixed(1);
-                const routInstant = calculateInstantRout(row.time, row.icp, p0, pp, pvi);
+                const deltaP = row.icp - pb;
+                const lnDeltaP = deltaP > 0 ? Math.log(deltaP).toFixed(3) : '--';
 
                 tr.innerHTML = `
                     <td>
@@ -1252,11 +1391,11 @@
                     <td>
                         <input type="number" step="0.5" class="table-input" value="${row.icp.toFixed(1)}" onchange="updateRowIcp(${idx}, this.value)">
                     </td>
-                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: ${deltaP >= 0 ? 'var(--accent-cyan)' : 'var(--accent-amber)'};">
-                        ${deltaP >= 0 ? '+' : ''}${deltaP}
+                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: ${deltaP >= 0 ? 'var(--accent-cyan)' : 'var(--accent-rose)'};">
+                        ${deltaP >= 0 ? '+' : ''}${deltaP.toFixed(1)}
                     </td>
-                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-primary);">
-                        ${routInstant !== null ? routInstant.toFixed(1) : '--'}
+                    <td style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--accent-emerald);">
+                        ${lnDeltaP}
                     </td>
                     <td style="text-align: center;">
                         <button class="btn-table-action" onclick="deleteRow(${idx})" title="Delete reading">&times;</button>
@@ -1290,12 +1429,12 @@
         function addRow() {
             let nextTime = 0.0;
             let nextIcp = 15.0;
-            const p0 = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
 
             if (readings.length > 0) {
                 const last = readings[readings.length - 1];
                 nextTime = +(last.time + 1.0).toFixed(1);
-                nextIcp = +(Math.max(p0, last.icp - 0.8)).toFixed(1);
+                nextIcp = +(Math.max(pb, pb + (last.icp - pb) * 0.8)).toFixed(1);
             }
 
             readings.push({ time: nextTime, icp: nextIcp });
@@ -1316,11 +1455,11 @@
 
         function clearTable() {
             if (confirm('Clear all readings?')) {
-                const p0 = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
-                const pp = parseFloat(document.getElementById('peakIcp').value) || 30.0;
+                const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
+                const ppeak = parseFloat(document.getElementById('peakIcp').value) || 26.0;
                 readings = [
-                    { time: 0.0, icp: pp },
-                    { time: 2.0, icp: (p0 + (pp - p0) * 0.5) }
+                    { time: 0.0, icp: ppeak },
+                    { time: 2.0, icp: +(pb + (ppeak - pb) * 0.6).toFixed(1) }
                 ];
                 renderTable();
                 updateAll();
@@ -1338,153 +1477,184 @@
         // --- Presets ---
         function loadPreset(key) {
             if (key === 'normal') {
-                document.getElementById('bolusVolume').value = "4.0";
+                document.getElementById('bolusVolume').value = "10.0";
                 document.getElementById('baselineIcp').value = "10.0";
-                document.getElementById('peakIcp').value = "23.0";
+                document.getElementById('peakIcp').value = "26.0";
                 document.getElementById('safetyThreshold').value = "30";
-                document.getElementById('bolusType').value = "injection";
+                // tau = 4.5 min, Rout = tau / C = 4.5 / (10/16) = 7.2
                 readings = [
-                    { time: 0.0, icp: 23.0 },
-                    { time: 0.5, icp: 19.5 },
-                    { time: 1.0, icp: 17.0 },
-                    { time: 1.5, icp: 15.0 },
-                    { time: 2.0, icp: 13.5 },
-                    { time: 2.5, icp: 12.4 },
-                    { time: 3.0, icp: 11.5 },
-                    { time: 4.0, icp: 10.6 },
-                    { time: 5.0, icp: 10.2 }
+                    { time: 0.0, icp: 26.0 },
+                    { time: 0.5, icp: 24.3 },
+                    { time: 1.0, icp: 22.8 },
+                    { time: 1.5, icp: 21.4 },
+                    { time: 2.0, icp: 20.2 },
+                    { time: 2.5, icp: 19.1 },
+                    { time: 3.0, icp: 18.1 },
+                    { time: 4.0, icp: 16.5 },
+                    { time: 5.0, icp: 15.2 },
+                    { time: 6.0, icp: 14.1 },
+                    { time: 8.0, icp: 12.6 },
+                    { time: 10.0, icp: 11.7 }
                 ];
             } else if (key === 'nph') {
-                document.getElementById('bolusVolume').value = "4.0";
+                document.getElementById('bolusVolume').value = "10.0";
                 document.getElementById('baselineIcp').value = "12.0";
                 document.getElementById('peakIcp').value = "32.0";
                 document.getElementById('safetyThreshold').value = "30";
-                document.getElementById('bolusType').value = "injection";
+                // tau = 8.0 min, Rout = 8.0 / (10/20) = 16.0
                 readings = [
                     { time: 0.0, icp: 32.0 },
-                    { time: 0.5, icp: 28.5 },
-                    { time: 1.0, icp: 26.0 },
-                    { time: 1.5, icp: 24.0 },
-                    { time: 2.0, icp: 22.2 },
-                    { time: 2.5, icp: 20.6 },
-                    { time: 3.0, icp: 19.2 },
-                    { time: 4.0, icp: 17.0 },
-                    { time: 5.0, icp: 15.2 },
-                    { time: 6.0, icp: 14.0 },
-                    { time: 7.0, icp: 13.1 }
+                    { time: 0.5, icp: 30.8 },
+                    { time: 1.0, icp: 29.6 },
+                    { time: 2.0, icp: 27.6 },
+                    { time: 3.0, icp: 25.8 },
+                    { time: 4.0, icp: 24.1 },
+                    { time: 5.0, icp: 22.7 },
+                    { time: 6.0, icp: 21.4 },
+                    { time: 8.0, icp: 19.3 },
+                    { time: 10.0, icp: 17.7 },
+                    { time: 12.0, icp: 16.5 },
+                    { time: 15.0, icp: 15.0 }
                 ];
             } else if (key === 'stiff') {
-                document.getElementById('bolusVolume').value = "3.0";
-                document.getElementById('baselineIcp').value = "14.0";
-                document.getElementById('peakIcp').value = "42.0";
-                document.getElementById('safetyThreshold').value = "30";
-                document.getElementById('bolusType').value = "injection";
-                readings = [
-                    { time: 0.0, icp: 42.0 },
-                    { time: 0.5, icp: 36.0 },
-                    { time: 1.0, icp: 31.5 },
-                    { time: 1.5, icp: 28.0 },
-                    { time: 2.0, icp: 25.2 },
-                    { time: 2.5, icp: 23.0 },
-                    { time: 3.0, icp: 21.2 },
-                    { time: 4.0, icp: 18.5 },
-                    { time: 5.0, icp: 16.6 },
-                    { time: 6.0, icp: 15.2 }
-                ];
-            } else if (key === 'tap') {
                 document.getElementById('bolusVolume').value = "5.0";
-                document.getElementById('baselineIcp').value = "24.0";
-                document.getElementById('peakIcp').value = "11.0";
+                document.getElementById('baselineIcp').value = "14.0";
+                document.getElementById('peakIcp').value = "40.0";
                 document.getElementById('safetyThreshold').value = "30";
-                document.getElementById('bolusType').value = "withdrawal";
+                // C = 5 / 26 = 0.192, tau = 3.5 min, Rout = 3.5 / 0.192 = 18.2
                 readings = [
-                    { time: 0.0, icp: 11.0 },
-                    { time: 0.5, icp: 13.5 },
-                    { time: 1.0, icp: 15.8 },
-                    { time: 1.5, icp: 17.6 },
-                    { time: 2.0, icp: 19.2 },
-                    { time: 2.5, icp: 20.5 },
-                    { time: 3.0, icp: 21.6 },
-                    { time: 4.0, icp: 22.8 },
-                    { time: 5.0, icp: 23.5 }
+                    { time: 0.0, icp: 40.0 },
+                    { time: 0.5, icp: 36.6 },
+                    { time: 1.0, icp: 33.6 },
+                    { time: 1.5, icp: 31.0 },
+                    { time: 2.0, icp: 28.7 },
+                    { time: 2.5, icp: 26.8 },
+                    { time: 3.0, icp: 25.1 },
+                    { time: 4.0, icp: 22.3 },
+                    { time: 5.0, icp: 20.2 },
+                    { time: 6.0, icp: 18.7 },
+                    { time: 8.0, icp: 16.6 }
+                ];
+            } else if (key === 'bolus5') {
+                document.getElementById('bolusVolume').value = "5.0";
+                document.getElementById('baselineIcp').value = "10.0";
+                document.getElementById('peakIcp').value = "22.0";
+                document.getElementById('safetyThreshold').value = "30";
+                // C = 5 / 12 = 0.417, tau = 3.2 min, Rout = 7.68
+                readings = [
+                    { time: 0.0, icp: 22.0 },
+                    { time: 0.5, icp: 20.3 },
+                    { time: 1.0, icp: 18.8 },
+                    { time: 1.5, icp: 17.5 },
+                    { time: 2.0, icp: 16.4 },
+                    { time: 3.0, icp: 14.7 },
+                    { time: 4.0, icp: 13.4 },
+                    { time: 5.0, icp: 12.5 },
+                    { time: 6.0, icp: 11.8 }
                 ];
             }
             renderTable();
             updateAll();
         }
 
-        function handleBolusTypeChange() {
-            const type = document.getElementById('bolusType').value;
-            const p0 = parseFloat(document.getElementById('baselineIcp').value) || 10;
-            if (type === 'withdrawal') {
-                document.getElementById('peakIcp').value = Math.max(2, p0 - 8).toFixed(1);
-            } else {
-                document.getElementById('peakIcp').value = (p0 + 15).toFixed(1);
-            }
-            updateAll();
-        }
+        // --- Core Mathematical Calculations ---
 
-        // --- Core Marmarou Mathematics ---
-        function calculatePVI(deltaV, p0, pp) {
-            const ratio = pp / p0;
+        // 1. PVI: deltaV / log10(Ppeak / Pb)
+        function calculatePVI(deltaV, pb, ppeak) {
+            const ratio = ppeak / pb;
             if (ratio <= 0 || ratio === 1) return 0;
             const logRatio = Math.abs(Math.log10(ratio));
             if (logRatio === 0) return 0;
             return Math.abs(deltaV) / logRatio;
         }
 
-        function calculateInstantRout(t, pt, p0, pp, pvi) {
-            if (t <= 0 || pvi <= 0) return null;
-            const num = pt * (pp - p0);
-            const den = pp * (pt - p0);
-            if (den === 0 || num / den <= 0) return null;
-
-            const logArg = num / den;
-            const logVal = Math.log10(logArg);
-            if (logVal <= 0.001) return null;
-
-            const rout = (t * p0) / (pvi * logVal);
-            return (rout > 0 && rout < 150) ? rout : null;
+        // 2. Compliance: C = deltaV / (Ppeak - Pb)
+        function calculateCompliance(deltaV, pb, ppeak) {
+            const deltaP = ppeak - pb;
+            if (deltaP <= 0) return 0;
+            return deltaV / deltaP;
         }
 
-        // Regression estimation of Rout from empirical points
-        function estimateGlobalRout(p0, pp, pvi) {
-            let sumRout = 0;
-            let count = 0;
-            const validRouts = [];
-
+        // 3. Linear Regression of ln[P(t) - Pb] vs t: slope = -1 / tau
+        function calculateLinearRegressionTau(pb, ppeak) {
+            const validPoints = [];
             readings.forEach(r => {
-                if (r.time > 0.1) {
-                    const rval = calculateInstantRout(r.time, r.icp, p0, pp, pvi);
-                    if (rval !== null) {
-                        validRouts.push(rval);
-                        sumRout += rval;
-                        count++;
-                    }
+                const delta = r.icp - pb;
+                if (delta > 0.05) {
+                    validPoints.push({ t: r.time, y: Math.log(delta) });
                 }
             });
 
-            if (count === 0) return 10.0;
-            // Return median for outlier resistance
-            validRouts.sort((a, b) => a - b);
-            const mid = Math.floor(validRouts.length / 2);
-            return validRouts.length % 2 !== 0 ? validRouts[mid] : (validRouts[mid - 1] + validRouts[mid]) / 2;
+            if (validPoints.length < 2) {
+                return { tau: 5.0, r2: 0, slope: -0.2, intercept: Math.log(Math.max(1, ppeak - pb)) };
+            }
+
+            const n = validPoints.length;
+            let sumT = 0, sumY = 0, sumTY = 0, sumT2 = 0, sumY2 = 0;
+
+            validPoints.forEach(p => {
+                sumT += p.t;
+                sumY += p.y;
+                sumTY += p.t * p.y;
+                sumT2 += p.t * p.t;
+                sumY2 += p.y * p.y;
+            });
+
+            const denom = (n * sumT2 - sumT * sumT);
+            if (denom === 0) return { tau: 5.0, r2: 0, slope: -0.2, intercept: 0 };
+
+            const slope = (n * sumTY - sumT * sumY) / denom;
+            const intercept = (sumY - slope * sumT) / n;
+
+            // R^2 calculation
+            const yMean = sumY / n;
+            let ssTot = 0, ssRes = 0;
+            validPoints.forEach(p => {
+                const pred = intercept + slope * p.t;
+                ssTot += (p.y - yMean) * (p.y - yMean);
+                ssRes += (p.y - pred) * (p.y - pred);
+            });
+            const r2 = ssTot > 0 ? Math.max(0, 1 - ssRes / ssTot) : 0;
+
+            // slope = -1 / tau  => tau = -1 / slope
+            let tau = slope < 0 ? -1 / slope : 5.0;
+            return { tau: Math.max(0.1, tau), r2, slope, intercept, validPoints };
+        }
+
+        // 4. Numerical Integration: AUC = integral of [P(t) - Pb] dt (Trapezoidal Rule)
+        function calculateTrapezoidalAUC(pb, tau, ppeak) {
+            if (readings.length < 2) return (ppeak - pb) * tau;
+
+            let auc = 0;
+            for (let i = 0; i < readings.length - 1; i++) {
+                const dt = readings[i + 1].time - readings[i].time;
+                const dP1 = Math.max(0, readings[i].icp - pb);
+                const dP2 = Math.max(0, readings[i + 1].icp - pb);
+                auc += 0.5 * (dP1 + dP2) * dt;
+            }
+
+            // Analytical tail extrapolation from last reading to infinity using tau
+            const lastReading = readings[readings.length - 1];
+            const dPlast = Math.max(0, lastReading.icp - pb);
+            const tailAuc = dPlast * tau;
+
+            return auc + tailAuc;
         }
 
         // --- Master Update Pipeline ---
         function updateAll() {
-            const deltaV = parseFloat(document.getElementById('bolusVolume').value) || 4.0;
-            const p0 = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
-            const pp = parseFloat(document.getElementById('peakIcp').value) || 30.0;
+            const vInf = parseFloat(document.getElementById('bolusVolume').value) || 10.0;
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10.0;
+            const ppeak = parseFloat(document.getElementById('peakIcp').value) || 26.0;
             const safetyThresh = parseFloat(document.getElementById('safetyThreshold').value) || 30.0;
 
-            // Update first row if time is 0
+            // Sync first table row if time is 0
             if (readings.length > 0 && readings[0].time === 0) {
-                readings[0].icp = pp;
+                readings[0].icp = ppeak;
             }
 
-            // 1. Calculate PVI
-            const pvi = calculatePVI(deltaV, p0, pp);
+            // 1. PVI: DeltaV / log10(Ppeak / Pb)
+            const pvi = calculatePVI(vInf, pb, ppeak);
             document.getElementById('valPvi').textContent = `${pvi.toFixed(1)} mL`;
 
             const badgePvi = document.getElementById('badgePvi');
@@ -1499,17 +1669,23 @@
                 badgePvi.textContent = 'Reduced Compliance';
             }
 
-            // 2. Elastance & Compliance
-            const ln10 = 2.302585;
-            const e0 = pvi > 0 ? (ln10 * p0) / pvi : 0;
-            const c0 = e0 > 0 ? 1 / e0 : 0;
+            // 2. Intracranial Compliance C = Vinf / (Ppeak - Pb)
+            const compliance = calculateCompliance(vInf, pb, ppeak);
+            document.getElementById('valCompliance').innerHTML = `${compliance.toFixed(3)} <span style="font-size: 13px;">mL/mmHg</span>`;
 
-            document.getElementById('valElastance').innerHTML = `${e0.toFixed(2)} <span style="font-size: 13px;">mmHg/mL</span>`;
-            document.getElementById('valCompliance').innerHTML = `${c0.toFixed(2)} <span style="font-size: 13px;">mL/mmHg</span>`;
+            // 3. Time Constant Tau via Linear Regression of ln[P - Pb] vs t
+            const reg = calculateLinearRegressionTau(pb, ppeak);
+            const tau = reg.tau;
+            document.getElementById('valTau').innerHTML = `${tau.toFixed(2)} <span style="font-size: 16px;">min</span>`;
 
-            // 3. Rout Estimation
-            const rout = estimateGlobalRout(p0, pp, pvi);
-            document.getElementById('valRout').innerHTML = `${rout.toFixed(1)} <span style="font-size: 14px;">mmHg/(mL/min)</span>`;
+            // 4. Area Under the Curve (AUC)
+            const auc = calculateTrapezoidalAUC(pb, tau, ppeak);
+            document.getElementById('valAuc').innerHTML = `${auc.toFixed(1)} <span style="font-size: 13px;">mmHg&middot;min</span>`;
+
+            // 5. Outflow Resistance Rout = AUC / Vinf = tau / C
+            // Rout using tau / C (exact analytical formulation from Marmarou exponential model)
+            const rout = compliance > 0 ? tau / compliance : 0;
+            document.getElementById('valRout').innerHTML = `${rout.toFixed(2)} <span style="font-size: 16px;">mmHg&middot;min/mL</span>`;
 
             const badgeRout = document.getElementById('badgeRout');
             if (rout < 10) {
@@ -1523,16 +1699,19 @@
                 badgeRout.textContent = 'Pathological';
             }
 
-            // 4. Half-Time (t1/2)
-            const log10_2 = 0.30103;
-            const tHalf = p0 > 0 ? (rout * pvi * log10_2) / p0 : 0;
-            const pHalf = p0 + (pp - p0) * 0.5;
+            // 6. Goodness of Fit R² & Slope
+            document.getElementById('valR2').textContent = `R² = ${reg.r2.toFixed(3)}`;
+            document.getElementById('badgeR2').textContent = `Slope: ${reg.slope.toFixed(3)}`;
+            document.getElementById('graph4SlopeBadge').textContent = `Slope = ${reg.slope.toFixed(3)} ( -1/τ )`;
 
-            document.getElementById('valHalfTime').innerHTML = `${tHalf.toFixed(2)} <span style="font-size: 14px;">min</span>`;
+            // 7. Half-time t1/2 = tau * ln(2)
+            const tHalf = tau * 0.693147;
+            const pHalf = pb + (ppeak - pb) * 0.5;
+            document.getElementById('valHalfTime').innerHTML = `${tHalf.toFixed(2)} <span style="font-size: 13px;">min</span>`;
             document.getElementById('subHalfPressure').textContent = `Time to 50% recovery (P½: ${pHalf.toFixed(1)} mmHg).`;
 
-            // 5. Safety Threshold Check
-            const maxObservedIcp = Math.max(pp, ...readings.map(r => r.icp));
+            // 8. Safety Threshold Check
+            const maxObservedIcp = Math.max(ppeak, ...readings.map(r => r.icp));
             const badgeSafety = document.getElementById('badgeSafety');
             const valSafety = document.getElementById('valSafetyStatus');
             const cardSafety = document.getElementById('cardSafetyStatus');
@@ -1554,56 +1733,51 @@
                 cardSafety.classList.remove('alert');
             }
 
-            document.getElementById('graph1PeakBadge').textContent = `Peak: ${pp.toFixed(1)} mmHg`;
+            document.getElementById('graph1PeakBadge').textContent = `Peak: ${ppeak.toFixed(1)} mmHg`;
+            document.getElementById('graph1TauBadge').textContent = `τ = ${tau.toFixed(2)} min`;
             document.getElementById('graph1SafetyBadge').textContent = `Safety: ${safetyThresh.toFixed(0)} mmHg`;
 
-            // 6. Update Charts
-            renderCharts(p0, pp, pvi, rout, tHalf, pHalf, safetyThresh);
+            // 9. Update Charts
+            renderCharts(pb, ppeak, tau, safetyThresh, reg);
         }
 
         // --- Chart Rendering Engine ---
-        function renderCharts(p0, pp, pvi, rout, tHalf, pHalf, safetyThresh) {
+        function renderCharts(pb, ppeak, tau, safetyThresh, reg) {
             if (typeof Chart === 'undefined') return;
 
-            const maxTime = Math.max(6.0, ...readings.map(r => r.time)) * 1.05;
-            const numCurvePoints = 80;
-            const timeStep = maxTime / numCurvePoints;
+            const maxDataTime = Math.max(6.0, ...readings.map(r => r.time));
+            const maxPlotTime = Math.max(maxDataTime, tau * 2.5) * 1.05;
+            const numCurvePoints = 100;
+            const timeStep = maxPlotTime / numCurvePoints;
 
-            // Generate high-resolution continuous curve data
-            const tau = (rout * pvi) / (2.302585 * p0);
+            const deltaP0 = ppeak - pb;
             const curveData = [];
             const d1Data = [];
             const d2Data = [];
 
-            let maxDecayVelocity = 0;
+            let initialDecayRate = deltaP0 / tau;
 
             for (let i = 0; i <= numCurvePoints; i++) {
                 const t = i * timeStep;
-                // Marmarou analytical continuous pressure equation
+                // P(t) = Pb + (Ppeak - Pb) * exp(-t / tau)
                 const expTerm = Math.exp(-t / tau);
-                const denom = 1 - (1 - p0 / pp) * expTerm;
-                const pt = denom !== 0 ? p0 / denom : p0;
-
+                const pt = pb + deltaP0 * expTerm;
                 curveData.push({ x: +t.toFixed(2), y: +pt.toFixed(2) });
 
-                // First derivative dP/dt
-                const dPdt = - (p0 / (denom * denom)) * (1 - p0 / pp) * (1 / tau) * expTerm;
-                d1Data.push({ x: +t.toFixed(2), y: +dPdt.toFixed(2) });
+                // dP/dt = - (Ppeak - Pb) / tau * exp(-t / tau)
+                const dpdt = - (deltaP0 / tau) * expTerm;
+                d1Data.push({ x: +t.toFixed(2), y: +dpdt.toFixed(2) });
 
-                if (Math.abs(dPdt) > maxDecayVelocity) {
-                    maxDecayVelocity = Math.abs(dPdt);
-                }
-
-                // Second derivative d2P/dt2
-                const d2Pdt2 = (p0 / (denom * denom * denom)) * (1 - p0 / pp) * (1 / (tau * tau)) * expTerm * ( (1 - p0 / pp) * expTerm + denom );
-                d2Data.push({ x: +t.toFixed(2), y: +d2Pdt2.toFixed(3) });
+                // d2P/dt2 = (Ppeak - Pb) / tau^2 * exp(-t / tau)
+                const d2pdt2 = (deltaP0 / (tau * tau)) * expTerm;
+                d2Data.push({ x: +t.toFixed(2), y: +d2pdt2.toFixed(3) });
             }
 
-            document.getElementById('graph2MaxRateBadge').textContent = `Peak Decay: -${maxDecayVelocity.toFixed(1)} mmHg/min`;
+            document.getElementById('graph2MaxRateBadge').textContent = `Initial Rate: -${initialDecayRate.toFixed(2)} mmHg/min`;
 
             const empiricalPoints = readings.map(r => ({ x: r.time, y: r.icp }));
 
-            // Common Theme Colors for Charts
+            // Common Theme Colors
             const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
             const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
             const tickColor = isDark ? '#94a3b8' : '#64748b';
@@ -1612,25 +1786,28 @@
             const ctx1 = document.getElementById('chart1').getContext('2d');
             if (chart1Instance) chart1Instance.destroy();
 
+            // Tau recovery pressure: Pb + (Ppeak - Pb) / e
+            const pTau = pb + deltaP0 / Math.E;
+
             chart1Instance = new Chart(ctx1, {
                 type: 'line',
                 plugins: [safetyThresholdPlugin, baselineLinePlugin],
                 data: {
                     datasets: [
                         {
-                            label: 'Continuous Fitted Decay P(t)',
+                            label: 'Mono-Exponential Decay P(t)',
                             data: curveData,
                             borderColor: '#06b6d4',
                             borderWidth: 2.8,
                             pointRadius: 0,
-                            tension: 0.35,
+                            tension: 0.25,
                             fill: {
                                 target: 'origin',
                                 above: isDark ? 'rgba(6, 182, 212, 0.08)' : 'rgba(6, 182, 212, 0.04)'
                             }
                         },
                         {
-                            label: 'Measured ICP Readings',
+                            label: 'Empirical ICP Readings',
                             data: empiricalPoints,
                             borderColor: '#38bdf8',
                             backgroundColor: '#38bdf8',
@@ -1639,12 +1816,12 @@
                             showLine: false
                         },
                         {
-                            label: `t½ Recovery Marker (${tHalf.toFixed(2)}m, ${pHalf.toFixed(1)} mmHg)`,
-                            data: [{ x: +tHalf.toFixed(2), y: +pHalf.toFixed(1) }],
-                            borderColor: '#10b981',
-                            backgroundColor: '#10b981',
-                            pointRadius: 7,
-                            pointStyle: 'triangle',
+                            label: `τ Marker (${tau.toFixed(2)} min, ${pTau.toFixed(1)} mmHg)`,
+                            data: [{ x: +tau.toFixed(2), y: +pTau.toFixed(1) }],
+                            borderColor: '#f59e0b',
+                            backgroundColor: '#f59e0b',
+                            pointRadius: 7.5,
+                            pointStyle: 'rectRot',
                             showLine: false
                         }
                     ]
@@ -1652,7 +1829,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    animation: { duration: 300 },
+                    animation: { duration: 250 },
                     plugins: {
                         legend: {
                             labels: { color: tickColor, font: { size: 11 } }
@@ -1663,10 +1840,10 @@
                             }
                         },
                         chartMarker: {
-                            xValue: +tHalf.toFixed(2),
-                            label: `t½ = ${tHalf.toFixed(2)} min`,
-                            color: '#10b981',
-                            badgeBg: 'rgba(16, 185, 129, 0.85)'
+                            xValue: +tau.toFixed(2),
+                            label: `τ = ${tau.toFixed(2)} min`,
+                            color: '#f59e0b',
+                            badgeBg: 'rgba(245, 158, 11, 0.9)'
                         }
                     },
                     scales: {
@@ -1680,8 +1857,8 @@
                             title: { display: true, text: 'Intracranial Pressure (mmHg)', color: tickColor, font: { weight: 600 } },
                             grid: { color: gridColor },
                             ticks: { color: tickColor },
-                            suggestedMin: Math.max(0, p0 - 4),
-                            suggestedMax: Math.max(pp, safetyThresh) + 6
+                            suggestedMin: Math.max(0, pb - 4),
+                            suggestedMax: Math.max(ppeak, safetyThresh) + 6
                         }
                     }
                 }
@@ -1699,9 +1876,9 @@
                             label: 'Instantaneous Rate of Pressure Change dP/dt (mmHg/min)',
                             data: d1Data,
                             borderColor: '#f59e0b',
-                            borderWidth: 2.4,
+                            borderWidth: 2.2,
                             pointRadius: 0,
-                            tension: 0.35,
+                            tension: 0.25,
                             fill: {
                                 target: 'origin',
                                 above: 'rgba(245, 158, 11, 0.08)',
@@ -1713,14 +1890,14 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    animation: { duration: 300 },
+                    animation: { duration: 250 },
                     plugins: {
                         legend: { labels: { color: tickColor, font: { size: 11 } } },
                         chartMarker: {
-                            xValue: +tHalf.toFixed(2),
-                            label: `t½ = ${tHalf.toFixed(2)} min`,
-                            color: '#10b981',
-                            badgeBg: 'rgba(16, 185, 129, 0.85)'
+                            xValue: +tau.toFixed(2),
+                            label: `τ = ${tau.toFixed(2)} min`,
+                            color: '#f59e0b',
+                            badgeBg: 'rgba(245, 158, 11, 0.9)'
                         }
                     },
                     scales: {
@@ -1751,9 +1928,9 @@
                             label: 'Curvature & Deceleration d²P/dt² (mmHg/min²)',
                             data: d2Data,
                             borderColor: '#a855f7',
-                            borderWidth: 2.4,
+                            borderWidth: 2.2,
                             pointRadius: 0,
-                            tension: 0.35,
+                            tension: 0.25,
                             fill: {
                                 target: 'origin',
                                 above: 'rgba(168, 85, 247, 0.08)'
@@ -1764,14 +1941,14 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    animation: { duration: 300 },
+                    animation: { duration: 250 },
                     plugins: {
                         legend: { labels: { color: tickColor, font: { size: 11 } } },
                         chartMarker: {
-                            xValue: +tHalf.toFixed(2),
-                            label: `t½ = ${tHalf.toFixed(2)} min`,
-                            color: '#10b981',
-                            badgeBg: 'rgba(16, 185, 129, 0.85)'
+                            xValue: +tau.toFixed(2),
+                            label: `τ = ${tau.toFixed(2)} min`,
+                            color: '#f59e0b',
+                            badgeBg: 'rgba(245, 158, 11, 0.9)'
                         }
                     },
                     scales: {
@@ -1783,6 +1960,68 @@
                         },
                         y: {
                             title: { display: true, text: 'd²P/dt² (mmHg/min²)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        }
+                    }
+                }
+            });
+
+            // --- Chart 4: Log Linearization Plot (ln[P(t) - Pb] vs t) ---
+            const ctx4 = document.getElementById('chart4').getContext('2d');
+            if (chart4Instance) chart4Instance.destroy();
+
+            const logScatter = [];
+            readings.forEach(r => {
+                const delta = r.icp - pb;
+                if (delta > 0.05) {
+                    logScatter.push({ x: r.time, y: +Math.log(delta).toFixed(3) });
+                }
+            });
+
+            const logLine = [
+                { x: 0, y: +reg.intercept.toFixed(3) },
+                { x: +maxPlotTime.toFixed(1), y: +(reg.intercept + reg.slope * maxPlotTime).toFixed(3) }
+            ];
+
+            chart4Instance = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: `Fitted Linear Regression (Slope = ${reg.slope.toFixed(3)} = -1/τ, R² = ${reg.r2.toFixed(3)})`,
+                            data: logLine,
+                            borderColor: '#10b981',
+                            borderWidth: 2.2,
+                            borderDash: [5, 4],
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Empirical ln[P(t) - Pb]',
+                            data: logScatter,
+                            borderColor: '#34d399',
+                            backgroundColor: '#34d399',
+                            pointRadius: 5.5,
+                            showLine: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    plugins: {
+                        legend: { labels: { color: tickColor, font: { size: 11 } } }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Time t (minutes)', color: tickColor, font: { weight: 600 } },
+                            grid: { color: gridColor },
+                            ticks: { color: tickColor }
+                        },
+                        y: {
+                            title: { display: true, text: 'ln[P(t) - Pb]', color: tickColor, font: { weight: 600 } },
                             grid: { color: gridColor },
                             ticks: { color: tickColor }
                         }
@@ -1825,62 +2064,70 @@
             const patientId = document.getElementById('patientId').value || 'N/A';
             const studyDate = document.getElementById('studyDate').value || 'N/A';
             const route = document.getElementById('accessRoute').value;
-            const deltaV = document.getElementById('bolusVolume').value;
-            const p0 = document.getElementById('baselineIcp').value;
-            const pp = document.getElementById('peakIcp').value;
+            const vInf = document.getElementById('bolusVolume').value;
+            const pb = document.getElementById('baselineIcp').value;
+            const ppeak = document.getElementById('peakIcp').value;
             const safety = document.getElementById('safetyThreshold').value;
 
             const pvi = document.getElementById('valPvi').textContent;
             const rout = document.getElementById('valRout').textContent.replace(/\s+/g, ' ');
+            const tau = document.getElementById('valTau').textContent.replace(/\s+/g, ' ');
             const compliance = document.getElementById('valCompliance').textContent.replace(/\s+/g, ' ');
-            const elastance = document.getElementById('valElastance').textContent.replace(/\s+/g, ' ');
-            const tHalf = document.getElementById('valHalfTime').textContent.replace(/\s+/g, ' ');
+            const auc = document.getElementById('valAuc').textContent.replace(/\s+/g, ' ');
+            const r2 = document.getElementById('valR2').textContent;
 
             let report = `=====================================================
 `;
-            report += `CSF BOLUS STUDY (MARMAROU KINETIC ANALYSIS) REPORT
+            report += `CSF BOLUS STUDY (MARMAROU MONO-EXPONENTIAL DECAY MODEL)
 `;
             report += `=====================================================
 `;
-            report += `Patient ID:       ${patientId}
+            report += `Patient ID:          ${patientId}
 `;
-            report += `Study Date:       ${studyDate}
+            report += `Study Date:          ${studyDate}
 `;
-            report += `Access Route:     ${route}
+            report += `Access Route:        ${route}
 `;
-            report += `Bolus Volume:     ${deltaV} mL
+            report += `Bolus Volume V_inf:  ${vInf} mL
 `;
-            report += `Baseline ICP P₀:  ${p0} mmHg
+            report += `Baseline ICP P_b:    ${pb} mmHg
 `;
-            report += `Peak ICP Pₚ:      ${pp} mmHg
+            report += `Peak ICP P_peak:     ${ppeak} mmHg
 `;
-            report += `Safety Threshold: ${safety} mmHg
+            report += `Safety Threshold:    ${safety} mmHg
 
 `;
 
-            report += `--- HYDRODYNAMIC PARAMETERS ---
+            report += `--- PRIMARY MARMAROU CALCULATIONS ---
 `;
-            report += `Pressure-Volume Index (PVI): ${pvi}
+            report += `1) Pressure-Volume Index (PVI):      ${pvi}
 `;
-            report += `Outflow Resistance (R_out):  ${rout}
+            report += `2) Outflow Resistance (R_out):       ${rout}
 `;
-            report += `Baseline Compliance (C₀):    ${compliance}
+            report += `3) Time Constant of Decay (tau):     ${tau}
+
 `;
-            report += `Baseline Elastance (E₀):     ${elastance}
+
+            report += `--- SECONDARY BIOMECHANICAL PARAMETERS ---
 `;
-            report += `Decay Half-Time (t½):        ${tHalf}
+            report += `Intracranial Compliance (C):         ${compliance}
+`;
+            report += `Area Under Curve (AUC):              ${auc}
+`;
+            report += `Exponential Regression Goodness:     ${r2}
 
 `;
 
             report += `--- RECORDED PRESSURE DECAY TIME SERIES ---
 `;
-            report += `Time (min) | ICP (mmHg) | Delta P (mmHg)
+            report += `Time (min) | ICP (mmHg) | P(t) - P_b | ln[P - P_b]
 `;
-            report += `----------------------------------------
+            report += `---------------------------------------------------
 `;
             readings.forEach(r => {
-                const dp = (r.icp - parseFloat(p0)).toFixed(1);
-                report += `${r.time.toFixed(1).padEnd(10)} | ${r.icp.toFixed(1).padEnd(10)} | ${dp >= 0 ? '+' : ''}${dp}
+                const dp = (r.icp - parseFloat(pb)).toFixed(1);
+                const lndp = (r.icp - parseFloat(pb)) > 0 ? Math.log(r.icp - parseFloat(pb)).toFixed(3) : '--';
+                report += `${r.time.toFixed(1).padEnd(10)} | ${r.icp.toFixed(1).padEnd(10)} | ${(dp >= 0 ? '+' : '') + dp.padEnd(9)} | ${lndp}
 `;
             });
 
@@ -1915,11 +2162,13 @@
         }
 
         function exportCsv() {
-            const p0 = parseFloat(document.getElementById('baselineIcp').value) || 10;
-            let csv = "Time (min),Measured ICP (mmHg),Delta P (mmHg)
+            const pb = parseFloat(document.getElementById('baselineIcp').value) || 10;
+            let csv = "Time (min),Measured ICP (mmHg),Delta P (mmHg),ln(Delta P)
 ";
             readings.forEach(r => {
-                csv += `${r.time.toFixed(2)},${r.icp.toFixed(2)},${(r.icp - p0).toFixed(2)}
+                const dp = r.icp - pb;
+                const lndp = dp > 0 ? Math.log(dp).toFixed(4) : '';
+                csv += `${r.time.toFixed(2)},${r.icp.toFixed(2)},${dp.toFixed(2)},${lndp}
 `;
             });
 

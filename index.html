@@ -695,6 +695,23 @@
         }
 
         /* Modal Styles */
+        .modal-overlay.active {
+            display: flex !important;
+        }
+
+        .modal-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -792,6 +809,7 @@
                 <button class="btn-icon" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Dark / Light Theme">
                     <span id="themeIcon">☀️</span> <span id="themeLabel">Light Mode</span>
                 </button>
+                <button class="btn-icon" id="about-btn" title="About Software & References">ℹ️ About</button>
                 <button class="btn-icon" onclick="openMathModal()" title="Marmarou Bolus Theory & Equations">
                     <span>📖</span> Formulae & Guide
                 </button>
@@ -1151,6 +1169,9 @@
 
         <!-- Footer -->
         <footer class="app-footer">
+            <div id="footer-disclaimer" style="font-size: 11.5px; color: var(--accent-amber); font-weight: 500; margin-bottom: 4px;">
+                ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+            </div>
             <div class="footer-author">
                 Software Developed by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN), Neurosurgery Research Listserv, UK.<br>
                 Email: <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
@@ -1214,6 +1235,39 @@
                 <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px; font-size: 11.5px; color: var(--accent-amber);">
                     ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
                 </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal Dialog for About -->
+    <div class="modal-overlay" id="about-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 class="modal-title">About CSF Bolus Study Calculator</h3>
+                <button class="btn-icon" id="close-about-btn" style="padding: 4px 10px;">✕</button>
+            </div>
+            <div style="font-size: 13.5px; line-height: 1.6; color: var(--text-primary);">
+                <p style="margin-bottom: 8px;">
+                    <strong>Software Developed by:</strong><br>
+                    Dr G Narenthiran FRCS(SN)<br>
+                    Neurosurgery Research Listserv, UK<br>
+                    Email: <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan);">g_narenthiran@hotmail.com</a>
+                </p>
+                <p style="margin-bottom: 12px; font-size: 12.5px; font-weight: 600; color: var(--accent-indigo); font-style: italic;">
+                    Dedicated to my mother Mrs Nirmaladevy Ganesalingam BSc
+                </p>
+                <hr style="border: none; border-top: 1px solid var(--card-border); margin: 12px 0;">
+                <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: var(--accent-amber); margin-bottom: 12px; line-height: 1.4;">
+                    ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+                </div>
+                <p style="font-size: 12px; color: var(--text-secondary);">
+                    <strong>Marmarou Bolus Study Kinetic Analysis:</strong><br>
+                    • <strong>1) Pressure-Volume Index (PVI):</strong> PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>). Volume needed to raise ICP 10-fold.<br>
+                    • <strong>2) Outflow Resistance (R<sub>out</sub>):</strong> R<sub>out</sub> = &int;[P(t) - P<sub>b</sub>]dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C. Values &gt; 12 mmHg&middot;min/mL predict positive response to CSF diversion.<br>
+                    • <strong>3) Time Constant of Decay (&tau;):</strong> &tau; = R<sub>out</sub> &times; C. Linear regression slope of ln[P(t) - P<sub>b</sub>] vs t equals -1/&tau;.<br>
+                    • <strong>Intracranial Compliance (C):</strong> C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>). Immediate volumetric buffering capacity.
+                </p>
             </div>
         </div>
     </div>
@@ -1364,6 +1418,28 @@
         }
 
         // --- Initialization ---
+        
+        // About Modal handlers
+        const aboutModal = document.getElementById('about-modal');
+        const aboutBtn = document.getElementById('about-btn');
+        const closeAboutBtn = document.getElementById('close-about-btn');
+
+        if (aboutBtn && aboutModal) {
+            aboutBtn.addEventListener('click', () => {
+                aboutModal.classList.add('active');
+            });
+        }
+        if (closeAboutBtn && aboutModal) {
+            closeAboutBtn.addEventListener('click', () => {
+                aboutModal.classList.remove('active');
+            });
+        }
+        if (aboutModal) {
+            aboutModal.addEventListener('click', (e) => {
+                if (e.target === aboutModal) aboutModal.classList.remove('active');
+            });
+        }
+
         function initApp() {
             const today = new Date().toISOString().split('T')[0];
             const studyDateEl = document.getElementById('studyDate');

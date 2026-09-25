@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSF Bolus Study Calculator - PVI, Rout & Time Constant (τ)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <!-- Chart.js for scientific multi-graph rendering -->
     <script src="chart.umd.min.js"></script>
     <script>
@@ -277,9 +280,11 @@
         .hero-metric-card.card-pvi {
             border-top: 4px solid var(--accent-cyan);
         }
+
         .hero-metric-card.card-rout {
             border-top: 4px solid var(--accent-emerald);
         }
+
         .hero-metric-card.card-tau {
             border-top: 4px solid var(--accent-amber);
         }
@@ -706,7 +711,7 @@
             padding: 28px;
             max-width: 600px;
             width: 100%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             gap: 16px;
@@ -775,20 +780,32 @@
                 color: #000000 !important;
                 padding: 10px !important;
             }
-            .app-header, .btn-icon, .btn-primary, .btn-secondary, .presets-bar, .btn-table-action {
+
+            .app-header,
+            .btn-icon,
+            .btn-primary,
+            .btn-secondary,
+            .presets-bar,
+            .btn-table-action {
                 display: none !important;
             }
-            .section-card, .chart-box, .metric-card, .hero-metric-card {
+
+            .section-card,
+            .chart-box,
+            .metric-card,
+            .hero-metric-card {
                 border: 1px solid #cccccc !important;
                 background: #ffffff !important;
                 box-shadow: none !important;
             }
+
             .workspace-grid {
                 grid-template-columns: 1fr !important;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
@@ -798,11 +815,14 @@
                     <span>💉</span> CSF Bolus Study Calculator
                 </h1>
                 <div class="subtitle">
-                    Marmarou Mono-Exponential Model: Pressure-Volume Index (PVI), Outflow Resistance (R<sub>out</sub>) & Time Constant of Pressure Decay (&tau;)
+                    Marmarou Mono-Exponential Model: Pressure-Volume Index (PVI), Outflow Resistance (R<sub>out</sub>) &
+                    Time Constant of Pressure Decay (&tau;)
                 </div>
                 <div class="copyright">
-                    Developed by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN), Neurosurgery Research Listserv, UK &bull; 
-                    <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
+                    Conceived, designed and tested by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS
+                    FRCS(SN), Neurosurgery Research Listserv, UK &bull;
+                    <a href="mailto:g_narenthiran@hotmail.com"
+                        style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
                 </div>
             </div>
             <div class="header-actions">
@@ -829,7 +849,8 @@
         <div class="disclaimer-banner">
             <span style="font-size: 20px;">⚠️</span>
             <div>
-                <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+                <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the
+                user should verify the calculations.
             </div>
         </div>
 
@@ -844,7 +865,8 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label>Patient ID / Ref</label>
-                    <input type="text" id="patientId" class="form-control" placeholder="e.g. PT-94021" value="PT-CSF-801">
+                    <input type="text" id="patientId" class="form-control" placeholder="e.g. PT-94021"
+                        value="PT-CSF-801">
                 </div>
                 <div class="form-group">
                     <label>Study Date</label>
@@ -861,19 +883,23 @@
                 </div>
                 <div class="form-group">
                     <label>Bolus Volume V<sub>inf</sub> (&Delta;V in mL)</label>
-                    <input type="number" id="bolusVolume" class="form-control" step="0.5" value="10.0" oninput="updateAll()">
+                    <input type="number" id="bolusVolume" class="form-control" step="0.5" value="10.0"
+                        oninput="updateAll()">
                 </div>
                 <div class="form-group">
                     <label>Baseline ICP P<sub>b</sub> (mmHg)</label>
-                    <input type="number" id="baselineIcp" class="form-control" step="0.5" value="10.0" oninput="updateAll()">
+                    <input type="number" id="baselineIcp" class="form-control" step="0.5" value="10.0"
+                        oninput="updateAll()">
                 </div>
                 <div class="form-group">
                     <label>Peak ICP P<sub>peak</sub> (mmHg)</label>
-                    <input type="number" id="peakIcp" class="form-control" step="0.5" value="26.0" oninput="updateAll()">
+                    <input type="number" id="peakIcp" class="form-control" step="0.5" value="26.0"
+                        oninput="updateAll()">
                 </div>
                 <div class="form-group">
                     <label style="color: var(--accent-rose); font-weight: 700;">Safety Threshold (mmHg)</label>
-                    <input type="number" id="safetyThreshold" class="form-control" step="1" value="30" style="border-color: rgba(244, 63, 94, 0.4);" oninput="updateAll()">
+                    <input type="number" id="safetyThreshold" class="form-control" step="1" value="30"
+                        style="border-color: rgba(244, 63, 94, 0.4);" oninput="updateAll()">
                 </div>
             </div>
         </section>
@@ -881,10 +907,14 @@
         <!-- Presets Quick Selection -->
         <div class="presets-bar">
             <span class="presets-label">⚡ Clinical Presets:</span>
-            <button class="preset-btn" onclick="loadPreset('normal')">1. Normal Adult (Vinf: 10 mL, Pb: 10, Ppeak: 26, Rout ~7.2)</button>
-            <button class="preset-btn" onclick="loadPreset('nph')">2. NPH / High Rout (Vinf: 10 mL, Pb: 12, Ppeak: 32, Rout ~16.0)</button>
-            <button class="preset-btn" onclick="loadPreset('stiff')">3. Stiff Brain / Low PVI (Vinf: 5 mL, Pb: 14, Ppeak: 40, Rout ~18.2)</button>
-            <button class="preset-btn" onclick="loadPreset('bolus5')">4. Standard 5 mL Bolus (Vinf: 5 mL, Pb: 10, Ppeak: 22)</button>
+            <button class="preset-btn" onclick="loadPreset('normal')">1. Normal Adult (Vinf: 10 mL, Pb: 10, Ppeak: 26,
+                Rout ~7.2)</button>
+            <button class="preset-btn" onclick="loadPreset('nph')">2. NPH / High Rout (Vinf: 10 mL, Pb: 12, Ppeak: 32,
+                Rout ~16.0)</button>
+            <button class="preset-btn" onclick="loadPreset('stiff')">3. Stiff Brain / Low PVI (Vinf: 5 mL, Pb: 14,
+                Ppeak: 40, Rout ~18.2)</button>
+            <button class="preset-btn" onclick="loadPreset('bolus5')">4. Standard 5 mL Bolus (Vinf: 5 mL, Pb: 10, Ppeak:
+                22)</button>
         </div>
 
         <!-- HERO THREE TARGET PARAMETERS -->
@@ -901,7 +931,8 @@
                 <div class="hero-metric-value" id="valPvi">-- mL</div>
                 <div class="hero-metric-formula">PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)</div>
                 <div class="hero-metric-desc">
-                    Volume required to raise ICP 10-fold. Characterizes intracranial mechanical compliance slope. Normal: &gt; 18 mL (adult) or &gt; 13 mL (elderly).
+                    Volume required to raise ICP 10-fold. Characterizes intracranial mechanical compliance slope.
+                    Normal: &gt; 18 mL (adult) or &gt; 13 mL (elderly).
                 </div>
             </div>
 
@@ -914,10 +945,13 @@
                     </div>
                     <span id="badgeRout" class="metric-badge badge-normal">Normal</span>
                 </div>
-                <div class="hero-metric-value" id="valRout">-- <span style="font-size: 16px;">mmHg&middot;min/mL</span></div>
-                <div class="hero-metric-formula">R<sub>out</sub> = &int;[P(t)-P<sub>b</sub>]dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C</div>
+                <div class="hero-metric-value" id="valRout">-- <span style="font-size: 16px;">mmHg&middot;min/mL</span>
+                </div>
+                <div class="hero-metric-formula">R<sub>out</sub> = &int;[P(t)-P<sub>b</sub>]dt / V<sub>inf</sub> = AUC /
+                    V<sub>inf</sub> = &tau; / C</div>
                 <div class="hero-metric-desc">
-                    Calculated via cumulative pressure-time integral divided by bolus volume. Normal: &lt; 10 &ndash; 12. Pathological: &gt; 12 &ndash; 18 mmHg&middot;min/mL.
+                    Calculated via cumulative pressure-time integral divided by bolus volume. Normal: &lt; 10 &ndash;
+                    12. Pathological: &gt; 12 &ndash; 18 mmHg&middot;min/mL.
                 </div>
             </div>
 
@@ -931,9 +965,11 @@
                     <span class="metric-badge badge-normal">Decay Rate</span>
                 </div>
                 <div class="hero-metric-value" id="valTau">-- <span style="font-size: 16px;">min</span></div>
-                <div class="hero-metric-formula">&tau; = R<sub>out</sub> &times; C = AUC / (P<sub>peak</sub> - P<sub>b</sub>)</div>
+                <div class="hero-metric-formula">&tau; = R<sub>out</sub> &times; C = AUC / (P<sub>peak</sub> -
+                    P<sub>b</sub>)</div>
                 <div class="hero-metric-desc">
-                    Rate of mono-exponential pressure decay. Slope of ln[P(t) - P<sub>b</sub>] vs time equals -1/&tau;. Prolonged &tau; signifies delayed CSF resorption.
+                    Rate of mono-exponential pressure decay. Slope of ln[P(t) - P<sub>b</sub>] vs time equals -1/&tau;.
+                    Prolonged &tau; signifies delayed CSF resorption.
                 </div>
             </div>
         </div>
@@ -946,7 +982,8 @@
                     <span class="metric-badge badge-normal">Buffering</span>
                 </div>
                 <div class="metric-value" id="valCompliance">-- <span style="font-size: 14px;">mL/mmHg</span></div>
-                <div class="metric-subtext">C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>). Immediate volumetric reserve.</div>
+                <div class="metric-subtext">C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>). Immediate volumetric
+                    reserve.</div>
             </div>
 
             <div class="metric-card">
@@ -973,7 +1010,8 @@
                     <span class="metric-badge badge-normal">50% Fall</span>
                 </div>
                 <div class="metric-value" id="valHalfTime">-- <span style="font-size: 14px;">min</span></div>
-                <div class="metric-subtext" id="subHalfPressure">t<sub>½</sub> = &tau; &times; ln(2) = 0.693 &times; &tau;.</div>
+                <div class="metric-subtext" id="subHalfPressure">t<sub>½</sub> = &tau; &times; ln(2) = 0.693 &times;
+                    &tau;.</div>
             </div>
 
             <div class="metric-card" id="cardSafetyStatus">
@@ -998,7 +1036,8 @@
                 </div>
 
                 <div style="font-size: 12px; color: var(--text-secondary);">
-                    Record time t (minutes post-bolus) and observed ICP as pressure decays back to baseline P<sub>b</sub>.
+                    Record time t (minutes post-bolus) and observed ICP as pressure decays back to baseline
+                    P<sub>b</sub>.
                 </div>
 
                 <div class="table-responsive">
@@ -1029,7 +1068,8 @@
                         <button class="btn-secondary" onclick="exportCsv()" title="Download CSV data">
                             <span>💾</span> CSV
                         </button>
-                        <button class="btn-secondary" onclick="clearTable()" style="color: var(--accent-rose);" title="Clear table readings">
+                        <button class="btn-secondary" onclick="clearTable()" style="color: var(--accent-rose);"
+                            title="Clear table readings">
                             <span>🗑️</span> Clear
                         </button>
                     </div>
@@ -1040,12 +1080,16 @@
                     <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
                         📌 Marmarou Bolus Mathematical Formulation:
                     </div>
-                    <div>&bull; <strong>Intracranial Compliance (C):</strong> &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>)</div>
+                    <div>&bull; <strong>Intracranial Compliance (C):</strong> &Delta;V / (P<sub>peak</sub> -
+                        P<sub>b</sub>)</div>
                     <div>&bull; <strong>PVI:</strong> &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)</div>
-                    <div>&bull; <strong>AUC:</strong> &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt = (P<sub>peak</sub> - P<sub>b</sub>) &times; &tau;</div>
-                    <div>&bull; <strong>Time Constant (&tau;):</strong> Slope of ln[P(t) - P<sub>b</sub>] vs t = -1/&tau;</div>
+                    <div>&bull; <strong>AUC:</strong> &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt =
+                        (P<sub>peak</sub> - P<sub>b</sub>) &times; &tau;</div>
+                    <div>&bull; <strong>Time Constant (&tau;):</strong> Slope of ln[P(t) - P<sub>b</sub>] vs t =
+                        -1/&tau;</div>
                     <div>&bull; <strong>R<sub>out</sub>:</strong> AUC / V<sub>inf</sub> = &tau; / C</div>
-                    <div>&bull; <strong>Mono-Exponential Model:</strong> P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>) &middot; e<sup>-t / &tau;</sup></div>
+                    <div>&bull; <strong>Mono-Exponential Model:</strong> P(t) = P<sub>b</sub> + (P<sub>peak</sub> -
+                        P<sub>b</sub>) &middot; e<sup>-t / &tau;</sup></div>
                 </div>
             </div>
 
@@ -1056,18 +1100,24 @@
                     <div class="chart-header">
                         <div class="chart-title-wrap">
                             <h3>
-                                <span style="color: var(--accent-cyan);">📈</span> Graph 1: Pressure Decay Curve P(t) vs Time
+                                <span style="color: var(--accent-cyan);">📈</span> Graph 1: Pressure Decay Curve P(t) vs
+                                Time
                             </h3>
                             <div class="chart-subtitle">
-                                Mono-exponential model P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>)e<sup>-t/&tau;</sup> with &tau; marker and safety threshold.
+                                Mono-exponential model P(t) = P<sub>b</sub> + (P<sub>peak</sub> -
+                                P<sub>b</sub>)e<sup>-t/&tau;</sup> with &tau; marker and safety threshold.
                             </div>
                         </div>
                         <div class="chart-badges">
                             <span class="badge-pill" id="graph1PeakBadge">Peak: 26.0 mmHg</span>
-                            <span class="badge-pill" style="border-color: var(--accent-amber); color: var(--accent-amber); background: rgba(245, 158, 11, 0.1);" id="graph1TauBadge">
+                            <span class="badge-pill"
+                                style="border-color: var(--accent-amber); color: var(--accent-amber); background: rgba(245, 158, 11, 0.1);"
+                                id="graph1TauBadge">
                                 &tau; = -- min
                             </span>
-                            <span class="badge-pill" style="border-color: var(--accent-rose); color: var(--accent-rose); background: rgba(244, 63, 94, 0.1);" id="graph1SafetyBadge">
+                            <span class="badge-pill"
+                                style="border-color: var(--accent-rose); color: var(--accent-rose); background: rgba(244, 63, 94, 0.1);"
+                                id="graph1SafetyBadge">
                                 Safety: 30 mmHg
                             </span>
                         </div>
@@ -1082,10 +1132,12 @@
                     <div class="chart-header">
                         <div class="chart-title-wrap">
                             <h3>
-                                <span style="color: var(--accent-amber);">📉</span> Graph 2: Rate of Pressure Decay (dP/dt)
+                                <span style="color: var(--accent-amber);">📉</span> Graph 2: Rate of Pressure Decay
+                                (dP/dt)
                             </h3>
                             <div class="chart-subtitle">
-                                First derivative: dP/dt = -[(P<sub>peak</sub> - P<sub>b</sub>) / &tau;] &middot; e<sup>-t/&tau;</sup> (instantaneous recovery velocity).
+                                First derivative: dP/dt = -[(P<sub>peak</sub> - P<sub>b</sub>) / &tau;] &middot;
+                                e<sup>-t/&tau;</sup> (instantaneous recovery velocity).
                             </div>
                         </div>
                         <div class="chart-badges">
@@ -1102,10 +1154,12 @@
                     <div class="chart-header">
                         <div class="chart-title-wrap">
                             <h3>
-                                <span style="color: var(--accent-purple);">🔄</span> Graph 3: Curvature & Decay Deceleration (d²P/dt²)
+                                <span style="color: var(--accent-purple);">🔄</span> Graph 3: Curvature & Decay
+                                Deceleration (d²P/dt²)
                             </h3>
                             <div class="chart-subtitle">
-                                Second derivative: d²P/dt² = [(P<sub>peak</sub> - P<sub>b</sub>) / &tau;²] &middot; e<sup>-t/&tau;</sup> (decay stabilization).
+                                Second derivative: d²P/dt² = [(P<sub>peak</sub> - P<sub>b</sub>) / &tau;²] &middot;
+                                e<sup>-t/&tau;</sup> (decay stabilization).
                             </div>
                         </div>
                         <div class="chart-badges">
@@ -1122,10 +1176,12 @@
                     <div class="chart-header">
                         <div class="chart-title-wrap">
                             <h3>
-                                <span style="color: var(--accent-emerald);">📏</span> Graph 4: Logarithmic Linearization Plot (ln[P(t) - P<sub>b</sub>] vs Time)
+                                <span style="color: var(--accent-emerald);">📏</span> Graph 4: Logarithmic Linearization
+                                Plot (ln[P(t) - P<sub>b</sub>] vs Time)
                             </h3>
                             <div class="chart-subtitle">
-                                Semi-logarithmic plot demonstrating mono-exponential decay where linear slope = -1/&tau;.
+                                Semi-logarithmic plot demonstrating mono-exponential decay where linear slope =
+                                -1/&tau;.
                             </div>
                         </div>
                         <div class="chart-badges">
@@ -1146,46 +1202,66 @@
                     <span>🩺</span> Diagnostic Thresholds & Clinical Interpretation
                 </div>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; font-size: 12.5px; color: var(--text-secondary);">
-                <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">1. Pressure-Volume Index (PVI)</div>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; font-size: 12.5px; color: var(--text-secondary);">
+                <div
+                    style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">1. Pressure-Volume
+                        Index (PVI)</div>
                     <div>&bull; <strong>Normal Adult:</strong> &gt; 18 mL (mean ~25 mL)</div>
                     <div>&bull; <strong>Borderline / Elderly:</strong> 13 &ndash; 18 mL</div>
-                    <div>&bull; <strong>Pathological (&lt; 13 mL):</strong> Indicates severe cranial volume exhaustion or stiff intracranial vault.</div>
+                    <div>&bull; <strong>Pathological (&lt; 13 mL):</strong> Indicates severe cranial volume exhaustion
+                        or stiff intracranial vault.</div>
                 </div>
-                <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <div style="font-weight: 700; color: var(--accent-emerald); margin-bottom: 6px;">2. CSF Outflow Resistance (R<sub>out</sub>)</div>
+                <div
+                    style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <div style="font-weight: 700; color: var(--accent-emerald); margin-bottom: 6px;">2. CSF Outflow
+                        Resistance (R<sub>out</sub>)</div>
                     <div>&bull; <strong>Normal:</strong> &lt; 10 &ndash; 12 mmHg&middot;min/mL</div>
                     <div>&bull; <strong>Borderline:</strong> 10 &ndash; 12 mmHg&middot;min/mL</div>
-                    <div>&bull; <strong>Pathological (&gt; 12 &ndash; 18 mmHg&middot;min/mL):</strong> Impaired CSF absorption capacity; supports diagnosis of communicating hydrocephalus or NPH.</div>
+                    <div>&bull; <strong>Pathological (&gt; 12 &ndash; 18 mmHg&middot;min/mL):</strong> Impaired CSF
+                        absorption capacity; supports diagnosis of communicating hydrocephalus or NPH.</div>
                 </div>
-                <div style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
-                    <div style="font-weight: 700; color: var(--accent-amber); margin-bottom: 6px;">3. Time Constant of Decay (&tau;)</div>
-                    <div>&bull; <strong>Definition:</strong> Product of outflow resistance and intracranial compliance (&tau; = R<sub>out</sub> &times; C).</div>
-                    <div>&bull; <strong>Significance:</strong> Prolonged &tau; signifies sluggish CSF resorption kinetics.</div>
+                <div
+                    style="background: var(--bg-secondary); padding: 14px; border-radius: 8px; border: 1px solid var(--card-border);">
+                    <div style="font-weight: 700; color: var(--accent-amber); margin-bottom: 6px;">3. Time Constant of
+                        Decay (&tau;)</div>
+                    <div>&bull; <strong>Definition:</strong> Product of outflow resistance and intracranial compliance
+                        (&tau; = R<sub>out</sub> &times; C).</div>
+                    <div>&bull; <strong>Significance:</strong> Prolonged &tau; signifies sluggish CSF resorption
+                        kinetics.</div>
                 </div>
             </div>
         </section>
 
         <!-- Footer -->
         <footer class="app-footer">
-            <div id="footer-disclaimer" style="font-size: 11.5px; color: var(--accent-amber); font-weight: 500; margin-bottom: 4px;">
-                ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+            <div id="footer-disclaimer"
+                style="font-size: 11.5px; color: var(--accent-amber); font-weight: 500; margin-bottom: 4px;">
+                ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and
+                the user should verify the calculations.
             </div>
             <div class="footer-author">
-                Software Developed by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN), Neurosurgery Research Listserv, UK.<br>
-                Email: <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
+                Software Developed by <strong>Dr G Narenthiran</strong> MB ChB BSc(MedSci)(Hons) FEBNS FRCS(SN),
+                Neurosurgery Research Listserv, UK.<br>
+                Email: <a href="mailto:g_narenthiran@hotmail.com"
+                    style="color: var(--accent-cyan); text-decoration: none;">g_narenthiran@hotmail.com</a>
             </div>
             <div class="footer-dedication">
                 Dedicated to my mother Mrs Nirmaladevy Ganesalingam BSc
             </div>
             <div class="footer-ref">
                 <strong>Key Clinical References:</strong><br>
-                1. Marmarou A, Shulman K, LaMorgese J. Compartmental analysis of compliance and outflow resistance of the cerebrospinal fluid system. <em>J Neurosurg</em> 1975;43(5):523-534.<br>
-                2. Marmarou A, Shulman K, Rosende RM. A nonlinear analysis of the cerebrospinal fluid system and intracranial pressure. <em>J Neurosurg</em> 1978;48(3):332-344.<br>
-                3. Tans JT, Boon AJ. How to evaluate cerebrospinal fluid dynamics. <em>Acta Neurochir Suppl</em> 2002;81:49-53.<br>
-                4. Czosnyka M, Czosnyka Z, Momjian S, Pickard JD. Cerebrospinal fluid dynamics. <em>Physiol Meas</em> 2004;25(5):R51-R76.<br>
-                5. Kosteljanetz M. CSF dynamics and pressure-volume relationships in patients with normal pressure hydrocephalus. <em>Acta Neurol Scand Suppl</em> 1986;108:1-23.
+                1. Marmarou A, Shulman K, LaMorgese J. Compartmental analysis of compliance and outflow resistance of
+                the cerebrospinal fluid system. <em>J Neurosurg</em> 1975;43(5):523-534.<br>
+                2. Marmarou A, Shulman K, Rosende RM. A nonlinear analysis of the cerebrospinal fluid system and
+                intracranial pressure. <em>J Neurosurg</em> 1978;48(3):332-344.<br>
+                3. Tans JT, Boon AJ. How to evaluate cerebrospinal fluid dynamics. <em>Acta Neurochir Suppl</em>
+                2002;81:49-53.<br>
+                4. Czosnyka M, Czosnyka Z, Momjian S, Pickard JD. Cerebrospinal fluid dynamics. <em>Physiol Meas</em>
+                2004;25(5):R51-R76.<br>
+                5. Kosteljanetz M. CSF dynamics and pressure-volume relationships in patients with normal pressure
+                hydrocephalus. <em>Acta Neurol Scand Suppl</em> 1986;108:1-23.
             </div>
         </footer>
     </div>
@@ -1197,30 +1273,39 @@
                 <div class="modal-title">📖 Marmarou Bolus Model Mathematical Framework</div>
                 <button class="btn-close" onclick="closeMathModal()">&times;</button>
             </div>
-            <div style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); display: flex; flex-direction: column; gap: 14px;">
+            <div
+                style="font-size: 13px; line-height: 1.6; color: var(--text-secondary); display: flex; flex-direction: column; gap: 14px;">
                 <p>
-                    In a bolus injection test, a discrete volume (V<sub>inf</sub>) is introduced instantaneously rather than continuously. Because a bolus creates a transient pressure spike followed by an exponential decay rather than a steady-state plateau, Anthony Marmarou’s mathematical model analyzes the entire pressure-time recovery curve.
+                    In a bolus injection test, a discrete volume (V<sub>inf</sub>) is introduced instantaneously rather
+                    than continuously. Because a bolus creates a transient pressure spike followed by an exponential
+                    decay rather than a steady-state plateau, Anthony Marmarou’s mathematical model analyzes the entire
+                    pressure-time recovery curve.
                 </p>
 
-                <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                <div
+                    style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
                     <strong style="color: var(--accent-cyan);">1. Intracranial Compliance (C) & PVI</strong>
                     <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
-                        C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>)  [mL/mmHg]<br>
-                        PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>)  [mL]
+                        C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>) [mL/mmHg]<br>
+                        PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>) [mL]
                     </div>
                 </div>
 
-                <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                <div
+                    style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
                     <strong style="color: var(--accent-emerald);">2. Outflow Resistance (R<sub>out</sub>)</strong>
                     <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
-                        R<sub>out</sub> = &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C
+                        R<sub>out</sub> = &int;₀<sup>&infin;</sup> [P(t) - P<sub>b</sub>] dt / V<sub>inf</sub> = AUC /
+                        V<sub>inf</sub> = &tau; / C
                     </div>
                     <div style="font-size: 11.5px; margin-top: 4px;">
-                        Dividing the cumulative excess pressure-time integral by the injected volume yields the true outflow resistance (mmHg&middot;min/mL).
+                        Dividing the cumulative excess pressure-time integral by the injected volume yields the true
+                        outflow resistance (mmHg&middot;min/mL).
                     </div>
                 </div>
 
-                <div style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+                <div
+                    style="background: var(--bg-tertiary); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
                     <strong style="color: var(--accent-amber);">3. Time Constant of Pressure Decay (&tau;)</strong>
                     <div style="font-family: 'JetBrains Mono', monospace; margin-top: 4px; color: var(--text-primary);">
                         P(t) = P<sub>b</sub> + (P<sub>peak</sub> - P<sub>b</sub>) &middot; e<sup>-t / &tau;</sup><br>
@@ -1232,14 +1317,16 @@
                     </div>
                 </div>
 
-                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px; font-size: 11.5px; color: var(--accent-amber);">
-                    ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+                <div
+                    style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px; font-size: 11.5px; color: var(--accent-amber);">
+                    ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes
+                    and the user should verify the calculations.
                 </div>
             </div>
         </div>
     </div>
 
-    
+
     <!-- Modal Dialog for About -->
     <div class="modal-overlay" id="about-modal">
         <div class="modal-box">
@@ -1252,21 +1339,30 @@
                     <strong>Software Developed by:</strong><br>
                     Dr G Narenthiran FRCS(SN)<br>
                     Neurosurgery Research Listserv, UK<br>
-                    Email: <a href="mailto:g_narenthiran@hotmail.com" style="color: var(--accent-cyan);">g_narenthiran@hotmail.com</a>
+                    Email: <a href="mailto:g_narenthiran@hotmail.com"
+                        style="color: var(--accent-cyan);">g_narenthiran@hotmail.com</a>
                 </p>
-                <p style="margin-bottom: 12px; font-size: 12.5px; font-weight: 600; color: var(--accent-indigo); font-style: italic;">
+                <p
+                    style="margin-bottom: 12px; font-size: 12.5px; font-weight: 600; color: var(--accent-indigo); font-style: italic;">
                     Dedicated to my mother Mrs Nirmaladevy Ganesalingam BSc
                 </p>
                 <hr style="border: none; border-top: 1px solid var(--card-border); margin: 12px 0;">
-                <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: var(--accent-amber); margin-bottom: 12px; line-height: 1.4;">
-                    ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes and the user should verify the calculations.
+                <div
+                    style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px 12px; font-size: 11.5px; color: var(--accent-amber); margin-bottom: 12px; line-height: 1.4;">
+                    ⚠️ <strong>Disclaimer:</strong> The CSF-bolus calculator should not be used for clinical purposes
+                    and the user should verify the calculations.
                 </div>
                 <p style="font-size: 12px; color: var(--text-secondary);">
                     <strong>Marmarou Bolus Study Kinetic Analysis:</strong><br>
-                    • <strong>1) Pressure-Volume Index (PVI):</strong> PVI = &Delta;V / log₁₀(P<sub>peak</sub> / P<sub>b</sub>). Volume needed to raise ICP 10-fold.<br>
-                    • <strong>2) Outflow Resistance (R<sub>out</sub>):</strong> R<sub>out</sub> = &int;[P(t) - P<sub>b</sub>]dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C. Values &gt; 12 mmHg&middot;min/mL predict positive response to CSF diversion.<br>
-                    • <strong>3) Time Constant of Decay (&tau;):</strong> &tau; = R<sub>out</sub> &times; C. Linear regression slope of ln[P(t) - P<sub>b</sub>] vs t equals -1/&tau;.<br>
-                    • <strong>Intracranial Compliance (C):</strong> C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>). Immediate volumetric buffering capacity.
+                    • <strong>1) Pressure-Volume Index (PVI):</strong> PVI = &Delta;V / log₁₀(P<sub>peak</sub> /
+                    P<sub>b</sub>). Volume needed to raise ICP 10-fold.<br>
+                    • <strong>2) Outflow Resistance (R<sub>out</sub>):</strong> R<sub>out</sub> = &int;[P(t) -
+                    P<sub>b</sub>]dt / V<sub>inf</sub> = AUC / V<sub>inf</sub> = &tau; / C. Values &gt; 12
+                    mmHg&middot;min/mL predict positive response to CSF diversion.<br>
+                    • <strong>3) Time Constant of Decay (&tau;):</strong> &tau; = R<sub>out</sub> &times; C. Linear
+                    regression slope of ln[P(t) - P<sub>b</sub>] vs t equals -1/&tau;.<br>
+                    • <strong>Intracranial Compliance (C):</strong> C = &Delta;V / (P<sub>peak</sub> - P<sub>b</sub>).
+                    Immediate volumetric buffering capacity.
                 </p>
             </div>
         </div>
@@ -1418,7 +1514,7 @@
         }
 
         // --- Initialization ---
-        
+
         // About Modal handlers
         const aboutModal = document.getElementById('about-modal');
         const aboutBtn = document.getElementById('about-btn');
@@ -2265,4 +2361,5 @@
         }
     </script>
 </body>
+
 </html>
